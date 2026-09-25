@@ -1,0 +1,8 @@
+import React from 'react';
+import DesignSystemDemo from './pages/DesignSystemDemo';
+
+function App() {
+  return <DesignSystemDemo />;
+}
+
+export default App;
