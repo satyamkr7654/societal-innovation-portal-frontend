@@ -1,8 +1,6 @@
 import React from 'react';
-import DesignSystemDemo from './pages/DesignSystemDemo';
+import AppRouter from './routes/AppRouter';
 
-function App() {
-  return <DesignSystemDemo />;
+export default function App() {
+  return <AppRouter />;
 }
-
-export default App;
