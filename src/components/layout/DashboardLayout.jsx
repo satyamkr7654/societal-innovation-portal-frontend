@@ -1,29 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 
 /**
  * DashboardLayout - Shell for authenticated role dashboards
- * Hardened for responsive perfection across mobile (~360px), tablet, and desktop.
+ * Connected directly to central AuthContext: uses user.role automatically.
  */
 export default function DashboardLayout() {
-  const [role, setRole] = useState('citizen');
+  const { user, role: authRole, logout, isAuthenticated } = useAuth();
+  const [activeRole, setActiveRole] = useState(authRole || 'citizen');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
-  // Synchronize role sidebar based on active URL prefix
+  // Keep activeRole in sync with authRole or current URL prefix
   useEffect(() => {
+    if (authRole) {
+      setActiveRole(authRole);
+      return;
+    }
+
     const path = location.pathname;
     if (path.startsWith('/admin')) {
-      setRole('admin');
+      setActiveRole('admin');
     } else if (path.startsWith('/university')) {
-      setRole('university');
+      setActiveRole('university');
     } else if (path.startsWith('/industry')) {
-      setRole('industry');
+      setActiveRole('industry');
     } else if (path.startsWith('/citizen')) {
-      setRole('citizen');
+      setActiveRole('citizen');
     }
-  }, [location.pathname]);
+  }, [authRole, location.pathname]);
 
   // Page titles based on route
   const getPageTitle = (pathname) => {
@@ -41,16 +49,21 @@ export default function DashboardLayout() {
     return 'Portal';
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 font-sans antialiased text-slate-800 flex overflow-x-hidden">
       {/* Role-Aware Sidebar */}
       <Sidebar
-        role={role}
+        role={activeRole}
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
       />
 
-      {/* Main Content Area (Offset by 64rem on desktop for fixed sidebar) */}
+      {/* Main Content Area */}
       <div className="flex-1 flex flex-col lg:pl-64 min-w-0 w-full">
         {/* Top Mini-Header */}
         <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-xs border-b border-slate-200/90 h-16 flex items-center justify-between px-3 sm:px-6 lg:px-8 shadow-xs gap-2">
@@ -77,16 +90,16 @@ export default function DashboardLayout() {
             </div>
           </div>
 
-          {/* Right: Temporary Role Switcher + Notification Bell + User Avatar */}
+          {/* Right: Role Switcher / Logged-in profile + Bell + Avatar + Logout */}
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            {/* TEMPORARY PHASE F1 ROLE SWITCHER */}
+            {/* Quick Role Override Dropdown (for development/testing preview) */}
             <div className="flex items-center gap-1 bg-slate-100 px-2 sm:px-2.5 py-1 rounded-md border border-slate-200">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 hidden md:inline">
                 Role:
               </span>
               <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
+                value={activeRole}
+                onChange={(e) => setActiveRole(e.target.value)}
                 className="bg-transparent text-[11px] sm:text-xs font-semibold text-primary focus:outline-none cursor-pointer"
               >
                 <option value="citizen">Citizen</option>
@@ -108,16 +121,37 @@ export default function DashboardLayout() {
               <span className="absolute top-1 sm:top-1.5 right-1 sm:right-1.5 w-2 h-2 bg-accent rounded-full ring-2 ring-white"></span>
             </Link>
 
-            {/* User Profile Avatar Pill */}
+            {/* User Profile Avatar */}
             <div className="flex items-center gap-2 pl-1.5 sm:pl-2 border-l border-slate-200">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
-                SK
+                {user?.name ? user.name.slice(0, 2) : 'US'}
               </div>
               <div className="hidden lg:block text-left">
-                <div className="text-xs font-bold text-slate-800 leading-tight">Satyam Kumar</div>
-                <div className="text-[10px] text-slate-500 capitalize">{role}</div>
+                <div className="text-xs font-bold text-slate-800 leading-tight truncate max-w-[120px]">
+                  {user?.name || 'Demo User'}
+                </div>
+                <div className="text-[10px] text-slate-500 capitalize">{activeRole}</div>
               </div>
             </div>
+
+            {/* Logout Button */}
+            {isAuthenticated && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
+                title="Sign Out"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+              </button>
+            )}
           </div>
         </header>
 

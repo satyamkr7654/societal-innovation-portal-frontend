@@ -1,9 +1,10 @@
 import React from 'react';
-import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-// Layout Wrappers
+// Layout Wrappers & Guards
 import PublicLayout from '../components/layout/PublicLayout';
 import DashboardLayout from '../components/layout/DashboardLayout';
+import ProtectedRoute from './ProtectedRoute';
 
 // Public & Shared Pages
 import Home from '../pages/Home';
@@ -33,12 +34,10 @@ import IndustryDashboard from '../pages/industry/IndustryDashboard';
 import BrowseProposals from '../pages/industry/BrowseProposals';
 
 /**
- * Master Route Configuration
- * Structures all public and authenticated role routes with nested layouts
- * and a 404 catch-all route.
+ * Master Route Configuration with Role-Based Route Guards
  */
 const router = createBrowserRouter([
-  // 1. PUBLIC LAYOUT ROUTES (Navbar + Content + Footer)
+  // 1. PUBLIC LAYOUT ROUTES (Accessible to everyone)
   {
     element: <PublicLayout />,
     children: [
@@ -58,7 +57,7 @@ const router = createBrowserRouter([
         path: '/design-system',
         element: <DesignSystemDemo />,
       },
-      // 404 Catch-All within Public Layout
+      // 404 Catch-All Route
       {
         path: '*',
         element: <NotFound />,
@@ -66,66 +65,92 @@ const router = createBrowserRouter([
     ],
   },
 
-  // 2. DASHBOARD LAYOUT ROUTES (Role-aware Sidebar + Mini-Header + Content)
+  // 2. DASHBOARD LAYOUT ROUTES (Protected with Authentication & Role Guards)
   {
     element: <DashboardLayout />,
     children: [
-      // Citizen Routes
       {
-        path: '/citizen/dashboard',
-        element: <CitizenDashboard />,
-      },
-      {
-        path: '/citizen/submit',
-        element: <SubmitProblem />,
-      },
-      {
-        path: '/citizen/problems',
-        element: <MyProblems />,
-      },
-      {
-        path: '/citizen/problems/:id',
-        element: <ProblemDetail />,
-      },
+        // Level 1: Global Authentication Check (User must be logged in)
+        element: <ProtectedRoute />,
+        children: [
+          // Level 2A: Citizen Only Routes
+          {
+            element: <ProtectedRoute allowedRoles={['citizen']} />,
+            children: [
+              {
+                path: '/citizen/dashboard',
+                element: <CitizenDashboard />,
+              },
+              {
+                path: '/citizen/submit',
+                element: <SubmitProblem />,
+              },
+              {
+                path: '/citizen/problems',
+                element: <MyProblems />,
+              },
+              {
+                path: '/citizen/problems/:id',
+                element: <ProblemDetail />,
+              },
+            ],
+          },
 
-      // Admin Routes
-      {
-        path: '/admin/dashboard',
-        element: <AdminDashboard />,
-      },
-      {
-        path: '/admin/review',
-        element: <ReviewProblems />,
-      },
+          // Level 2B: Government Admin Only Routes
+          {
+            element: <ProtectedRoute allowedRoles={['admin']} />,
+            children: [
+              {
+                path: '/admin/dashboard',
+                element: <AdminDashboard />,
+              },
+              {
+                path: '/admin/review',
+                element: <ReviewProblems />,
+              },
+            ],
+          },
 
-      // University Routes
-      {
-        path: '/university/dashboard',
-        element: <UniversityDashboard />,
-      },
-      {
-        path: '/university/assignments',
-        element: <Assignments />,
-      },
-      {
-        path: '/university/proposals',
-        element: <Proposals />,
-      },
+          // Level 2C: University Only Routes
+          {
+            element: <ProtectedRoute allowedRoles={['university']} />,
+            children: [
+              {
+                path: '/university/dashboard',
+                element: <UniversityDashboard />,
+              },
+              {
+                path: '/university/assignments',
+                element: <Assignments />,
+              },
+              {
+                path: '/university/proposals',
+                element: <Proposals />,
+              },
+            ],
+          },
 
-      // Industry Routes
-      {
-        path: '/industry/dashboard',
-        element: <IndustryDashboard />,
-      },
-      {
-        path: '/industry/proposals',
-        element: <BrowseProposals />,
-      },
+          // Level 2D: Industry Only Routes
+          {
+            element: <ProtectedRoute allowedRoles={['industry']} />,
+            children: [
+              {
+                path: '/industry/dashboard',
+                element: <IndustryDashboard />,
+              },
+              {
+                path: '/industry/proposals',
+                element: <BrowseProposals />,
+              },
+            ],
+          },
 
-      // Shared Authenticated Routes
-      {
-        path: '/notifications',
-        element: <Notifications />,
+          // Level 2E: Shared Authenticated Routes (Any valid logged-in role)
+          {
+            path: '/notifications',
+            element: <Notifications />,
+          },
+        ],
       },
     ],
   },

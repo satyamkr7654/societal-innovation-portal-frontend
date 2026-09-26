@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import Button from '../ui/Button';
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
 
   const navLinks = [
     { label: 'Home', path: '/' },
@@ -12,13 +15,18 @@ export default function Navbar() {
     { label: 'Design Tokens', path: '/design-system' },
   ];
 
+  const handleLogout = () => {
+    logout();
+    setIsMobileMenuOpen(false);
+    navigate('/');
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-2">
-          {/* Brand Logo & Name (Protected against text-overflow on small devices) */}
+          {/* Brand Logo & Name */}
           <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0">
-            {/* Civic Emblem Badge */}
             <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary shrink-0 flex items-center justify-center text-white shadow-xs border border-primary-light">
               <span className="font-heading font-black text-xs sm:text-sm tracking-wider text-accent-light">
                 JH
@@ -42,9 +50,11 @@ export default function Navbar() {
                 to={link.path}
                 className={({ isActive }) => `
                   px-3 py-2 rounded text-xs font-semibold tracking-wide transition duration-150
-                  ${isActive && link.path === '/' 
-                    ? 'text-primary bg-slate-100/80 font-bold' 
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}
+                  ${
+                    isActive && link.path === '/'
+                      ? 'text-primary bg-slate-100/80 font-bold'
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                  }
                 `}
               >
                 {link.label}
@@ -52,18 +62,58 @@ export default function Navbar() {
             ))}
           </nav>
 
-          {/* Desktop Auth Action Buttons */}
+          {/* Desktop Auth Action / Profile Section */}
           <div className="hidden md:flex items-center gap-2.5 shrink-0">
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button variant="primary" size="sm">
-                Citizen Register
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3">
+                <Link to={`/${user?.role || 'citizen'}/dashboard`}>
+                  <Button variant="primary" size="sm">
+                    Dashboard &rarr;
+                  </Button>
+                </Link>
+
+                <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                  <div className="w-8 h-8 rounded-full bg-primary text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                    {user?.name ? user.name.slice(0, 2) : 'US'}
+                  </div>
+                  <div className="text-left text-xs">
+                    <div className="font-bold text-slate-800 leading-none truncate max-w-[110px]">
+                      {user?.name}
+                    </div>
+                    <div className="text-[10px] text-slate-400 capitalize">{user?.role}</div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
+                  title="Sign Out"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    />
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" size="sm">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button variant="primary" size="sm">
+                    Citizen Register
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Hamburger Toggle Button */}
@@ -106,16 +156,51 @@ export default function Navbar() {
           </div>
 
           <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
-            <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
-              <Button variant="outline" size="md" className="w-full justify-center">
-                Sign In
-              </Button>
-            </Link>
-            <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
-              <Button variant="primary" size="md" className="w-full justify-center">
-                Citizen Register
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <div className="flex items-center gap-2.5 p-2 bg-slate-50 rounded-lg">
+                  <div className="w-8 h-8 rounded-full bg-primary text-white font-bold text-xs flex items-center justify-center">
+                    {user?.name ? user.name.slice(0, 2) : 'US'}
+                  </div>
+                  <div className="text-left text-xs">
+                    <div className="font-bold text-slate-800">{user?.name}</div>
+                    <div className="text-[10px] text-slate-400 capitalize">{user?.role}</div>
+                  </div>
+                </div>
+
+                <Link
+                  to={`/${user?.role || 'citizen'}/dashboard`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full"
+                >
+                  <Button variant="primary" size="md" className="w-full justify-center">
+                    Go to Dashboard &rarr;
+                  </Button>
+                </Link>
+
+                <Button
+                  variant="outline"
+                  size="md"
+                  onClick={handleLogout}
+                  className="w-full justify-center text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                  <Button variant="outline" size="md" className="w-full justify-center">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                  <Button variant="primary" size="md" className="w-full justify-center">
+                    Citizen Register
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
