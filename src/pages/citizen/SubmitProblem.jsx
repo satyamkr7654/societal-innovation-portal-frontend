@@ -1,50 +1,348 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
+import { useAuth } from '../../context/AuthContext';
+import { CIVIC_CATEGORIES, createMockProblem } from '../../utils/mockData';
 import Card from '../../components/ui/Card';
-import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
+import FormInput from '../../components/ui/FormInput';
+import LocationPicker from '../../components/ui/LocationPicker';
+import PhotoUpload from '../../components/ui/PhotoUpload';
+import Badge from '../../components/ui/Badge';
+
+/**
+ * Zod Schema for Citizen Problem Submission
+ */
+const submitProblemSchema = z.object({
+  title: z
+    .string()
+    .min(10, 'Title must be at least 10 characters describing the issue')
+    .max(120, 'Title cannot exceed 120 characters'),
+  description: z
+    .string()
+    .min(25, 'Please provide more details (at least 25 characters) to help nodal teams investigate'),
+  category: z.string().min(1, 'Please select a civic category'),
+  district: z.string().min(2, 'Please select the relevant Jharkhand district'),
+  address: z.string().min(5, 'Street address / landmark is required'),
+  location: z
+    .object(
+      {
+        lat: z.number(),
+        lng: z.number(),
+      },
+      { invalid_type_error: 'Please drop a pin on the map to mark the exact location' }
+    )
+    .nullable()
+    .refine((val) => val !== null && val?.lat !== undefined && val?.lng !== undefined, {
+      message: 'Please select a location on the map',
+    }),
+});
+
+const JHARKHAND_DISTRICTS = [
+  'Ranchi',
+  'Dhanbad',
+  'East Singhbhum (Jamshedpur)',
+  'Bokaro',
+  'Hazaribagh',
+  'Deoghar',
+  'Khunti',
+  'Ramgarh',
+  'Dumka',
+  'West Singhbhum (Chaibasa)',
+  'Giridih',
+  'Palamu',
+];
 
 export default function SubmitProblem() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [successToast, setSuccessToast] = useState('');
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(submitProblemSchema),
+    mode: 'onTouched',
+    defaultValues: {
+      title: '',
+      description: '',
+      category: 'Water',
+      district: 'Ranchi',
+      address: '',
+      location: null,
+    },
+  });
+
+  const selectedCategory = watch('category');
+
+  const onSubmit = async (data) => {
+    setSuccessToast('');
+
+    try {
+      // Simulate submission network latency (800ms)
+      await new Promise((resolve) => setTimeout(resolve, 800));
+
+      // Generate preview URL if user attached an actual image file
+      const photoUrl = selectedPhoto
+        ? URL.createObjectURL(selectedPhoto)
+        : 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80';
+
+      // Persist into mock data layer
+      const created = createMockProblem({
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        district: data.district,
+        location: {
+          address: data.address,
+          lat: data.location.lat,
+          lng: data.location.lng,
+        },
+        citizen: {
+          id: user?.id || 'usr_cit_01',
+          name: user?.name || 'Citizen Ramesh',
+          phone: user?.phone || '9835123450',
+        },
+        photoUrl,
+      });
+
+      setSuccessToast(
+        `Problem lodged successfully! Tracking Case ID: ${created.id}. Redirecting to your problems...`
+      );
+
+      // Redirect to My Problems list
+      setTimeout(() => {
+        navigate('/citizen/problems');
+      }, 1200);
+    } catch {
+      // Handled in Phase F8 with Axios catch
+    }
+  };
+
   return (
-    <div className="max-w-3xl space-y-6">
-      <div>
-        <h2 className="text-2xl font-heading font-bold text-slate-900">
-          Report a Societal Problem
-        </h2>
-        <p className="text-xs sm:text-sm text-slate-500">
-          Provide detailed evidence and location coordinates to help government officers review and assign your issue.
-        </p>
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header Banner */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-2xl font-heading font-bold text-slate-900 tracking-tight">
+            Report a Local Problem
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500">
+            Submit localized municipal, sanitation, or infrastructure issues directly to the Government of Jharkhand.
+          </p>
+        </div>
+        <Badge status="validated" size="sm">
+          SIH26043 Form
+        </Badge>
       </div>
 
-      <Card
-        header={
-          <div className="flex items-center justify-between">
-            <span className="font-heading font-bold text-slate-800 text-sm">
-              Citizen Reporting Interface
-            </span>
-            <Badge status="progress" size="sm">
-              Phase F3 Target
-            </Badge>
-          </div>
-        }
-      >
-        <div className="space-y-4 py-3">
-          <div className="p-4 bg-slate-50 rounded-lg border border-slate-200 space-y-2">
-            <div className="font-heading font-semibold text-sm text-slate-800">
-              Interactive Form Preview (Coming in Phase F3):
-            </div>
-            <ul className="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
-              <li>Problem Title & Description (with character validation)</li>
-              <li>Civic Category Selector (Water Contamination, Sanitation, Health, Agriculture, Education)</li>
-              <li>Photo Upload with thumbnail preview</li>
-              <li>Interactive <strong>Leaflet Map Picker</strong> (click to drop pin with latitude/longitude)</li>
-            </ul>
-          </div>
-          <div className="pt-2">
-            <Button variant="primary" size="md" disabled>
-              Submit Problem Form (Coming in Phase F3)
-            </Button>
-          </div>
+      {/* Success Notification Banner */}
+      {successToast && (
+        <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2.5 animate-in fade-in duration-200">
+          <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <span>{successToast}</span>
         </div>
+      )}
+
+      <Card>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+          {/* 1. Category Visual Chips Selector */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Civic Issue Category <span className="text-red-500">*</span>
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              {CIVIC_CATEGORIES.map((cat) => {
+                const isSelected = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => setValue('category', cat.id, { shouldValidate: true })}
+                    className={`
+                      p-3 rounded-lg border text-left flex flex-col justify-between transition duration-150 cursor-pointer
+                      ${
+                        isSelected
+                          ? 'border-primary bg-primary/5 text-primary shadow-xs ring-1 ring-primary'
+                          : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700'
+                      }
+                    `}
+                  >
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <span className="text-xl">{cat.icon}</span>
+                      {isSelected && (
+                        <span className="w-2 h-2 rounded-full bg-primary" />
+                      )}
+                    </div>
+                    <span className="text-xs font-bold leading-tight">{cat.id}</span>
+                    <span className="text-[10px] text-slate-400 mt-0.5 truncate max-w-full">
+                      {cat.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            {errors.category && (
+              <p className="text-xs text-red-600 font-medium mt-1.5">{errors.category.message}</p>
+            )}
+          </div>
+
+          {/* 2. Problem Title */}
+          <FormInput
+            label="Problem Title"
+            placeholder="e.g. Open drainage overflow causing waterlogging near Ward 12"
+            required
+            helperText="Clear, one-sentence summary of the grievance (10-120 characters)"
+            {...register('title')}
+            error={errors.title}
+          />
+
+          {/* 3. Detailed Description */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="description"
+              className="block text-xs font-bold uppercase tracking-wider text-slate-700"
+            >
+              Detailed Description <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="description"
+              rows={4}
+              placeholder="Describe the severity, how many families are affected, how long the issue has persisted, and any safety hazards..."
+              className={`
+                w-full rounded bg-white text-sm text-slate-900 placeholder:text-slate-400 transition duration-150 p-3.5 border
+                ${
+                  errors.description
+                    ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+                    : 'border-slate-300 hover:border-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20'
+                }
+                focus:outline-none
+              `}
+              {...register('description')}
+            />
+            {errors.description ? (
+              <p className="text-xs text-red-600 font-medium">{errors.description.message}</p>
+            ) : (
+              <p className="text-[11px] text-slate-400">
+                Minimum 25 characters required for administrative verification
+              </p>
+            )}
+          </div>
+
+          {/* 4. Photo Evidence Drag-and-Drop Zone (Task F3.4) */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Ground Photo Evidence <span className="text-slate-400 font-normal">(Optional, but recommended)</span>
+              </label>
+              <span className="text-[11px] text-slate-400">Photos help university engineers verify scope</span>
+            </div>
+            <PhotoUpload onFileChange={(file) => setSelectedPhoto(file)} />
+          </div>
+
+          {/* 5. District & Street Landmark */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label
+                htmlFor="district"
+                className="block text-xs font-bold uppercase tracking-wider text-slate-700"
+              >
+                District <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="district"
+                className="w-full rounded bg-white text-sm text-slate-900 py-2.5 px-3 border border-slate-300 hover:border-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none cursor-pointer"
+                {...register('district')}
+              >
+                {JHARKHAND_DISTRICTS.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
+              </select>
+              {errors.district && (
+                <p className="text-xs text-red-600 font-medium">{errors.district.message}</p>
+              )}
+            </div>
+
+            <FormInput
+              label="Street / Landmark Address"
+              placeholder="e.g. Near Harmu Ground, Ward 12"
+              required
+              {...register('address')}
+              error={errors.address}
+            />
+          </div>
+
+          {/* 6. Interactive Leaflet Map Location Pinning */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                Pin Location on Map <span className="text-red-500">*</span>
+              </label>
+              <span className="text-[11px] text-slate-400">Click anywhere on the map to set GPS coordinates</span>
+            </div>
+
+            <Controller
+              name="location"
+              control={control}
+              render={({ field }) => (
+                <LocationPicker
+                  value={field.value}
+                  onChange={(coords) => field.onChange(coords)}
+                  height="300px"
+                />
+              )}
+            />
+
+            {errors.location && (
+              <p className="flex items-center gap-1.5 text-xs text-red-600 font-semibold pt-1">
+                <svg className="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path
+                    fillRule="evenodd"
+                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <span>{errors.location.message}</span>
+              </p>
+            )}
+          </div>
+
+          {/* Form Actions */}
+          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-xs text-slate-400">
+              Your submission will be audited by the District Nodal Officer within 24-48 hours.
+            </p>
+
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                isLoading={isSubmitting}
+                className="w-full sm:w-auto"
+              >
+                Submit Citizen Grievance &rarr;
+              </Button>
+            </div>
+          </div>
+        </form>
       </Card>
     </div>
   );

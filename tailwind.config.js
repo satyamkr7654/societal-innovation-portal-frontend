@@ -4,6 +4,16 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    // Civic Status Badge color utilities — must be safelisted because they are
+    // used as dynamic string values (not full class names) in statusConfig.js
+    'bg-status-submitted-bg', 'text-status-submitted-text', 'border-status-submitted-border',
+    'bg-status-validated-bg', 'text-status-validated-text', 'border-status-validated-border',
+    'bg-status-assigned-bg',  'text-status-assigned-text',  'border-status-assigned-border',
+    'bg-status-progress-bg',  'text-status-progress-text',  'border-status-progress-border',
+    'bg-status-solved-bg',    'text-status-solved-text',    'border-status-solved-border',
+    'bg-status-rejected-bg',  'text-status-rejected-text',  'border-status-rejected-border',
+  ],
   theme: {
     extend: {
       fontFamily: {

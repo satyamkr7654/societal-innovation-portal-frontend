@@ -14,6 +14,11 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const handleRoleSwitch = (newRole) => {
+    setActiveRole(newRole);
+    navigate(`/${newRole}/dashboard`);
+  };
+
   // Keep activeRole in sync with authRole or current URL prefix
   useEffect(() => {
     if (authRole) {
@@ -99,7 +104,7 @@ export default function DashboardLayout() {
               </span>
               <select
                 value={activeRole}
-                onChange={(e) => setActiveRole(e.target.value)}
+                onChange={(e) => handleRoleSwitch(e.target.value)}
                 className="bg-transparent text-[11px] sm:text-xs font-semibold text-primary focus:outline-none cursor-pointer"
               >
                 <option value="citizen">Citizen</option>
