@@ -39,7 +39,8 @@ export default function Notifications() {
             System Notifications
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Automated alerts triggered on every problem status change and milestone update.
+            Automated alerts triggered on every problem status change and milestone
+            update.
           </p>
         </div>
         <Button variant="outline" size="sm">
@@ -49,7 +50,11 @@ export default function Notifications() {
 
       <div className="space-y-3">
         {mockNotifications.map((notif) => (
-          <Card key={notif.id} hover={true} className={notif.unread ? 'border-primary/40 bg-slate-50/70' : ''}>
+          <Card
+            key={notif.id}
+            hover={true}
+            className={notif.unread ? 'border-primary/40 bg-slate-50/70' : ''}
+          >
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
@@ -62,9 +67,7 @@ export default function Notifications() {
                 <h3 className="font-heading font-semibold text-slate-900 text-sm">
                   {notif.title}
                 </h3>
-                <p className="text-xs text-slate-600 font-sans">
-                  {notif.desc}
-                </p>
+                <p className="text-xs text-slate-600 font-sans">{notif.desc}</p>
               </div>
             </div>
           </Card>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import Button from '../ui/Button';
 
 export default function Navbar() {
@@ -78,7 +78,9 @@ export default function Navbar() {
                     <div className="font-bold text-slate-800 leading-none truncate max-w-[110px]">
                       {user?.name}
                     </div>
-                    <div className="text-[10px] text-slate-400 capitalize">{user?.role}</div>
+                    <div className="text-[10px] text-slate-400 capitalize">
+                      {user?.role}
+                    </div>
                   </div>
                 </div>
 
@@ -88,7 +90,12 @@ export default function Navbar() {
                   className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
                   title="Sign Out"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -124,12 +131,32 @@ export default function Navbar() {
               aria-expanded={isMobileMenuOpen}
             >
               {isMobileMenuOpen ? (
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               ) : (
-                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               )}
             </button>
@@ -162,7 +189,9 @@ export default function Navbar() {
                   </div>
                   <div className="text-left text-xs">
                     <div className="font-bold text-slate-800">{user?.name}</div>
-                    <div className="text-[10px] text-slate-400 capitalize">{user?.role}</div>
+                    <div className="text-[10px] text-slate-400 capitalize">
+                      {user?.role}
+                    </div>
                   </div>
                 </div>
 
@@ -187,12 +216,20 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                <Link
+                  to="/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full"
+                >
                   <Button variant="outline" size="md" className="w-full justify-center">
                     Sign In
                   </Button>
                 </Link>
-                <Link to="/register" onClick={() => setIsMobileMenuOpen(false)} className="w-full">
+                <Link
+                  to="/register"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full"
+                >
                   <Button variant="primary" size="md" className="w-full justify-center">
                     Citizen Register
                   </Button>

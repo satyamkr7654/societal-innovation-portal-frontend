@@ -9,15 +9,14 @@ export default function NotFound() {
       <div className="max-w-md w-full text-center">
         <Card>
           <div className="space-y-5 py-6">
-            <div className="text-6xl font-heading font-black text-slate-300">
-              404
-            </div>
+            <div className="text-6xl font-heading font-black text-slate-300">404</div>
             <div className="space-y-2">
               <h2 className="text-2xl font-heading font-bold text-slate-900">
                 Page Not Found
               </h2>
               <p className="text-xs text-slate-500 max-w-xs mx-auto leading-relaxed">
-                The requested URL does not exist or may have been relocated in the Societal Innovation Portal directory.
+                The requested URL does not exist or may have been relocated in the
+                Societal Innovation Portal directory.
               </p>
             </div>
             <div className="pt-2">

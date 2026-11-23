@@ -18,7 +18,9 @@ export default function Footer() {
               </span>
             </div>
             <p className="text-xs text-slate-600 leading-relaxed max-w-sm">
-              Smart India Hackathon 2026 Problem Statement SIH26043. Connecting Citizens, Universities, and Industry partners to resolve localized societal challenges under the supervision of the Government of Jharkhand.
+              Smart India Hackathon 2026 Problem Statement SIH26043. Connecting Citizens,
+              Universities, and Industry partners to resolve localized societal challenges
+              under the supervision of the Government of Jharkhand.
             </p>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded text-[11px] font-semibold text-slate-700 border border-slate-200">
               <span className="w-2 h-2 rounded-full bg-emerald-500"></span>

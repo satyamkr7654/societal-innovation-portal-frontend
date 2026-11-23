@@ -1,26 +1,38 @@
-import React, { createContext, useContext, useState } from 'react';
-import { getSessionUser, registerAccount, signIn, signOut } from '../utils/mockAuth';
+import React, { useEffect, useState } from 'react';
+import * as authService from '../services/authService';
+import { AuthContext } from './AuthContextValue';
 
-const AuthContext = createContext(null);
-
-/**
- * AuthProvider - current user plus login, register and logout.
- * Backed by the browser-only demo store until the Phase 4 backend replaces it.
- */
+/** Provides the current user plus login, register and logout. */
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(getSessionUser);
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   // Lets the login page tell "you signed out" apart from "you need to sign in"
   const [justLoggedOut, setJustLoggedOut] = useState(false);
 
+  useEffect(() => {
+    let isActive = true;
+    authService
+      .restoreSession()
+      .catch(() => null)
+      .then((restored) => {
+        if (!isActive) return;
+        setUser(restored);
+        setIsLoading(false);
+      });
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
   const login = async (credentials) => {
-    const signedIn = await signIn(credentials);
+    const signedIn = await authService.login(credentials);
     setJustLoggedOut(false);
     setUser(signedIn);
     return signedIn;
   };
 
-  const logout = () => {
-    signOut();
+  const logout = async () => {
+    await authService.logout();
     setJustLoggedOut(true);
     setUser(null);
   };
@@ -29,19 +41,12 @@ export function AuthProvider({ children }) {
     user,
     role: user?.role || null,
     isAuthenticated: Boolean(user),
+    isLoading,
     justLoggedOut,
     login,
-    register: registerAccount,
+    register: authService.register,
     logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }

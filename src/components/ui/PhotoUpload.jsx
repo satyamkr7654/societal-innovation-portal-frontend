@@ -20,21 +20,8 @@ export default function PhotoUpload({
   const [errorMsg, setErrorMsg] = useState('');
   const fileInputRef = useRef(null);
 
-  // Generate and manage temporary browser memory preview URL
-  useEffect(() => {
-    if (!file) {
-      setPreviewUrl(null);
-      return;
-    }
-
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
-
-    // Cleanup memory when component unmounts or file changes
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [file]);
+  // Free the preview when it is replaced or the component unmounts
+  useEffect(() => () => previewUrl && URL.revokeObjectURL(previewUrl), [previewUrl]);
 
   const handleFileProcess = (selectedFile) => {
     setErrorMsg('');
@@ -50,11 +37,14 @@ export default function PhotoUpload({
     // 2. Verify file size limit
     if (selectedFile.size > maxSizeBytes) {
       const sizeMB = (maxSizeBytes / (1024 * 1024)).toFixed(0);
-      setErrorMsg(`Image size exceeds the ${sizeMB}MB limit. Please upload a smaller photo.`);
+      setErrorMsg(
+        `Image size exceeds the ${sizeMB}MB limit. Please upload a smaller photo.`
+      );
       return;
     }
 
     setFile(selectedFile);
+    setPreviewUrl(URL.createObjectURL(selectedFile));
     if (onFileChange) {
       onFileChange(selectedFile);
     }
@@ -191,7 +181,11 @@ export default function PhotoUpload({
       {/* Error message */}
       {errorMsg && (
         <p className="flex items-center gap-1.5 text-xs text-red-600 font-medium animate-in fade-in duration-150">
-          <svg className="w-3.5 h-3.5 shrink-0 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+          <svg
+            className="w-3.5 h-3.5 shrink-0 text-red-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
             <path
               fillRule="evenodd"
               d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"

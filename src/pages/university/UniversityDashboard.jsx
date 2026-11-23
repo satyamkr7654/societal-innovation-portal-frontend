@@ -13,7 +13,8 @@ export default function UniversityDashboard() {
             University Innovation Dashboard
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Manage assigned civic challenges, student project teams, and proposal milestones.
+            Manage assigned civic challenges, student project teams, and proposal
+            milestones.
           </p>
         </div>
         <Link to="/university/assignments">
@@ -26,21 +27,27 @@ export default function UniversityDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Assigned Challenges</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Assigned Challenges
+            </span>
             <div className="text-3xl font-heading font-bold text-purple-700">5</div>
             <p className="text-xs text-slate-500">Awaiting proposal submission</p>
           </div>
         </Card>
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Active Proposals</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Active Proposals
+            </span>
             <div className="text-3xl font-heading font-bold text-primary">3</div>
             <p className="text-xs text-slate-500">Submitted for industry funding</p>
           </div>
         </Card>
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Milestones Completed</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Milestones Completed
+            </span>
             <div className="text-3xl font-heading font-bold text-emerald-600">8 / 12</div>
             <p className="text-xs text-slate-500">Field prototypes deployed</p>
           </div>
@@ -60,7 +67,9 @@ export default function UniversityDashboard() {
         }
       >
         <p className="text-xs text-slate-600 leading-relaxed py-2">
-          In <strong>Phase F5</strong>, universities will have proposal drafting editors (budget breakdown, hardware/software specs, timeline), team member assignment, and milestone status reporting.
+          In <strong>Phase F5</strong>, universities will have proposal drafting editors
+          (budget breakdown, hardware/software specs, timeline), team member assignment,
+          and milestone status reporting.
         </p>
       </Card>
     </div>

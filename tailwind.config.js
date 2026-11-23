@@ -1,19 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
-  safelist: [
-    // Civic Status Badge color utilities — must be safelisted because they are
-    // used as dynamic string values (not full class names) in statusConfig.js
-    'bg-status-submitted-bg', 'text-status-submitted-text', 'border-status-submitted-border',
-    'bg-status-validated-bg', 'text-status-validated-text', 'border-status-validated-border',
-    'bg-status-assigned-bg',  'text-status-assigned-text',  'border-status-assigned-border',
-    'bg-status-progress-bg',  'text-status-progress-text',  'border-status-progress-border',
-    'bg-status-solved-bg',    'text-status-solved-text',    'border-status-solved-border',
-    'bg-status-rejected-bg',  'text-status-rejected-text',  'border-status-rejected-border',
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       fontFamily: {
@@ -76,12 +63,12 @@ export default {
         },
       },
       borderRadius: {
-        sm: '0.25rem',  // 4px - badges, small tags
+        sm: '0.25rem', // 4px - badges, small tags
         DEFAULT: '0.375rem', // 6px - buttons, inputs
-        md: '0.5rem',    // 8px - small cards
-        lg: '0.75rem',   // 12px - standard cards, dialogs
-        xl: '1rem',      // 16px - prominent containers
-        full: '9999px',  // rounded pills
+        md: '0.5rem', // 8px - small cards
+        lg: '0.75rem', // 12px - standard cards, dialogs
+        xl: '1rem', // 16px - prominent containers
+        full: '9999px', // rounded pills
       },
       borderWidth: { 3: '3px' },
       backdropBlur: { xs: '2px' },
@@ -94,9 +81,10 @@ export default {
         md: '0 4px 6px -1px rgba(15, 39, 68, 0.08), 0 2px 4px -2px rgba(15, 39, 68, 0.05)',
         lg: '0 10px 15px -3px rgba(15, 39, 68, 0.1), 0 4px 6px -4px rgba(15, 39, 68, 0.05)',
         card: '0 1px 3px 0 rgba(15, 23, 42, 0.06), 0 1px 2px -1px rgba(15, 23, 42, 0.04)',
-        'card-hover': '0 12px 24px -6px rgba(15, 39, 68, 0.12), 0 4px 8px -2px rgba(15, 39, 68, 0.06)',
+        'card-hover':
+          '0 12px 24px -6px rgba(15, 39, 68, 0.12), 0 4px 8px -2px rgba(15, 39, 68, 0.06)',
       },
     },
   },
   plugins: [],
-}
+};

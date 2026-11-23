@@ -1,7 +1,6 @@
 import React from 'react';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
-import Button from '../../components/ui/Button';
 
 export default function ReviewProblems() {
   return (
@@ -11,7 +10,8 @@ export default function ReviewProblems() {
           Review & Triage Reported Problems
         </h2>
         <p className="text-xs sm:text-sm text-slate-500">
-          Validate citizen reports, reject spam with mandatory reason, and assign verified issues to universities.
+          Validate citizen reports, reject spam with mandatory reason, and assign verified
+          issues to universities.
         </p>
       </div>
 
@@ -29,20 +29,29 @@ export default function ReviewProblems() {
       >
         <div className="space-y-4 py-2">
           <p className="text-xs text-slate-600 leading-relaxed">
-            In <strong>Phase F4</strong>, this page will host the government review table with:
+            In <strong>Phase F4</strong>, this page will host the government review table
+            with:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600">
             <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
               <strong className="text-emerald-700">1. VALIDATE:</strong>
-              <p>Mark verified problem as legitimate and ready for university assignment.</p>
+              <p>
+                Mark verified problem as legitimate and ready for university assignment.
+              </p>
             </div>
             <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
               <strong className="text-red-700">2. REJECT (With Reason):</strong>
-              <p>Reject invalid/duplicate problem with mandatory feedback logged in status history.</p>
+              <p>
+                Reject invalid/duplicate problem with mandatory feedback logged in status
+                history.
+              </p>
             </div>
             <div className="p-3 bg-slate-50 rounded border border-slate-200 space-y-1">
               <strong className="text-primary">3. ASSIGN UNIVERSITY:</strong>
-              <p>Select accredited college (e.g. BIT Mesra, NIT Jamshedpur) based on expertise.</p>
+              <p>
+                Select accredited college (e.g. BIT Mesra, NIT Jamshedpur) based on
+                expertise.
+              </p>
             </div>
           </div>
         </div>

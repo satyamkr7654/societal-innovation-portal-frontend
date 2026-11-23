@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 
-import { useAuth } from '../../context/AuthContext';
-import { CIVIC_CATEGORIES, createMockProblem } from '../../utils/mockData';
+import { CIVIC_CATEGORIES } from '../../constants/categories';
+import { submitProblemSchema } from '../../schemas/problemSchemas';
+import { createProblem } from '../../services/problemService';
 import {
   JHARKHAND_DISTRICTS,
   findDistrict,
-  isInJharkhandArea,
-  isTooFarFromDistrict,
   nearestDistrict,
 } from '../../utils/jharkhand';
-import { photoToDataUrl } from '../../utils/image';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import FormInput from '../../components/ui/FormInput';
@@ -21,51 +18,7 @@ import LocationPicker from '../../components/ui/LocationPicker';
 import PhotoUpload from '../../components/ui/PhotoUpload';
 import Badge from '../../components/ui/Badge';
 
-/**
- * Zod Schema for Citizen Problem Submission
- */
-const submitProblemSchema = z
-  .object({
-    title: z
-      .string()
-      .trim()
-      .min(10, 'Title must be at least 10 characters describing the issue')
-      .max(120, 'Title cannot exceed 120 characters'),
-    description: z
-      .string()
-      .trim()
-      .min(25, 'Please provide more details (at least 25 characters)')
-      .max(2000, 'Description cannot exceed 2000 characters'),
-    category: z.enum(
-      CIVIC_CATEGORIES.map((c) => c.id),
-      { error: 'Please select a civic category' }
-    ),
-    district: z
-      .string()
-      .refine((name) => Boolean(findDistrict(name)), 'Please select a Jharkhand district'),
-    address: z
-      .string()
-      .trim()
-      .min(5, 'Street address / landmark is required')
-      .max(200, 'Address cannot exceed 200 characters'),
-    location: z
-      .object({ lat: z.number(), lng: z.number() })
-      .nullable()
-      .refine((point) => point !== null, {
-        message: 'Please select a location on the map',
-        abort: true,
-      })
-      .refine((point) => point === null || isInJharkhandArea(point), {
-        message: 'The pin is outside the Jharkhand area',
-      }),
-  })
-  .refine((data) => !isTooFarFromDistrict(data.location, data.district), {
-    message: 'The pin is too far from the selected district',
-    path: ['location'],
-  });
-
 export default function SubmitProblem() {
-  const { user } = useAuth();
   const navigate = useNavigate();
   const [submitError, setSubmitError] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -75,7 +28,6 @@ export default function SubmitProblem() {
     handleSubmit,
     control,
     setValue,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(submitProblemSchema),
@@ -90,26 +42,22 @@ export default function SubmitProblem() {
     },
   });
 
-  const selectedCategory = watch('category');
-  const selectedDistrict = watch('district');
-  const pin = watch('location');
+  const selectedCategory = useWatch({ control, name: 'category' });
+  const selectedDistrict = useWatch({ control, name: 'district' });
+  const pin = useWatch({ control, name: 'location' });
   const closest = pin ? nearestDistrict(pin) : null;
 
   const onSubmit = async (data) => {
     setSubmitError('');
     try {
-      const photoUrl = selectedPhoto ? await photoToDataUrl(selectedPhoto) : null;
-      const created = createMockProblem(
-        {
-          title: data.title,
-          description: data.description,
-          category: data.category,
-          district: data.district,
-          location: { address: data.address, ...data.location },
-          photoUrl,
-        },
-        user
-      );
+      const created = await createProblem({
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        district: data.district,
+        location: { address: data.address, ...data.location },
+        photo: selectedPhoto,
+      });
       navigate('/citizen/problems', { state: { createdId: created.id } });
     } catch (error) {
       setSubmitError(error.message);
@@ -125,7 +73,8 @@ export default function SubmitProblem() {
             Report a Local Problem
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Submit localized municipal, sanitation, or infrastructure issues directly to the Government of Jharkhand.
+            Submit localized municipal, sanitation, or infrastructure issues directly to
+            the Government of Jharkhand.
           </p>
         </div>
         <Badge status="validated" size="sm">
@@ -159,9 +108,7 @@ export default function SubmitProblem() {
                   >
                     <div className="flex items-center justify-between w-full mb-1">
                       <span className="text-xl">{cat.icon}</span>
-                      {isSelected && (
-                        <span className="w-2 h-2 rounded-full bg-primary" />
-                      )}
+                      {isSelected && <span className="w-2 h-2 rounded-full bg-primary" />}
                     </div>
                     <span className="text-xs font-bold leading-tight">{cat.id}</span>
                     <span className="text-[10px] text-slate-400 mt-0.5 truncate max-w-full">
@@ -172,7 +119,9 @@ export default function SubmitProblem() {
               })}
             </div>
             {errors.category && (
-              <p className="text-xs text-red-600 font-medium mt-1.5">{errors.category.message}</p>
+              <p className="text-xs text-red-600 font-medium mt-1.5">
+                {errors.category.message}
+              </p>
             )}
           </div>
 
@@ -210,7 +159,9 @@ export default function SubmitProblem() {
               {...register('description')}
             />
             {errors.description ? (
-              <p className="text-xs text-red-600 font-medium">{errors.description.message}</p>
+              <p className="text-xs text-red-600 font-medium">
+                {errors.description.message}
+              </p>
             ) : (
               <p className="text-[11px] text-slate-400">
                 Minimum 25 characters required for administrative verification
@@ -222,9 +173,14 @@ export default function SubmitProblem() {
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Ground Photo Evidence <span className="text-slate-400 font-normal">(Optional, but recommended)</span>
+                Ground Photo Evidence{' '}
+                <span className="text-slate-400 font-normal">
+                  (Optional, but recommended)
+                </span>
               </label>
-              <span className="text-[11px] text-slate-400">Photos help university engineers verify scope</span>
+              <span className="text-[11px] text-slate-400">
+                Photos help university engineers verify scope
+              </span>
             </div>
             <PhotoUpload onFileChange={(file) => setSelectedPhoto(file)} />
           </div>
@@ -250,7 +206,9 @@ export default function SubmitProblem() {
                 ))}
               </select>
               {errors.district && (
-                <p className="text-xs text-red-600 font-medium">{errors.district.message}</p>
+                <p className="text-xs text-red-600 font-medium">
+                  {errors.district.message}
+                </p>
               )}
             </div>
 
@@ -269,7 +227,9 @@ export default function SubmitProblem() {
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
                 Pin Location on Map <span className="text-red-500">*</span>
               </label>
-              <span className="text-[11px] text-slate-400">Click anywhere on the map to set GPS coordinates</span>
+              <span className="text-[11px] text-slate-400">
+                Click anywhere on the map to set GPS coordinates
+              </span>
             </div>
 
             <Controller
@@ -294,7 +254,11 @@ export default function SubmitProblem() {
 
             {errors.location && (
               <p className="flex items-center gap-1.5 text-xs text-red-600 font-semibold pt-1">
-                <svg className="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <svg
+                  className="w-4 h-4 text-red-500 shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
                     fillRule="evenodd"
                     d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
@@ -318,7 +282,8 @@ export default function SubmitProblem() {
           {/* Form Actions */}
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p className="text-xs text-slate-400">
-              Your submission will be audited by the District Nodal Officer within 24-48 hours.
+              Your submission will be audited by the District Nodal Officer within 24-48
+              hours.
             </p>
 
             <div className="flex items-center gap-3 w-full sm:w-auto">

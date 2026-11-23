@@ -1,7 +1,6 @@
 import React from 'react';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
-import Button from '../../components/ui/Button';
 
 export default function BrowseProposals() {
   return (
@@ -11,7 +10,8 @@ export default function BrowseProposals() {
           Browse University Innovation Proposals
         </h2>
         <p className="text-xs sm:text-sm text-slate-500">
-          Discover verified civic solution proposals looking for industry sponsorship, mentorship, or materials.
+          Discover verified civic solution proposals looking for industry sponsorship,
+          mentorship, or materials.
         </p>
       </div>
 
@@ -33,13 +33,16 @@ export default function BrowseProposals() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-slate-600">
             <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <strong>Financial CSR:</strong> Direct budget sponsorship against transparent milestone deliverables.
+              <strong>Financial CSR:</strong> Direct budget sponsorship against
+              transparent milestone deliverables.
             </div>
             <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <strong>Technical Mentorship:</strong> Senior industry engineers guiding university research teams.
+              <strong>Technical Mentorship:</strong> Senior industry engineers guiding
+              university research teams.
             </div>
             <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <strong>Equipment & Materials:</strong> In-kind donations of IoT sensors, pumps, lab chemicals, or servers.
+              <strong>Equipment & Materials:</strong> In-kind donations of IoT sensors,
+              pumps, lab chemicals, or servers.
             </div>
           </div>
         </div>

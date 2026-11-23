@@ -1,4 +1,9 @@
 import React from 'react';
+import {
+  STATUS_CONFIG,
+  WORKFLOW_STAGES,
+  normalizeStatus,
+} from '../../constants/statusConfig';
 
 /**
  * StatusStepper - 5-Stage Civic Workflow Progression Stepper
@@ -13,52 +18,20 @@ export default function StatusStepper({
   statusHistory = [],
   rejectionReason = null,
 }) {
-  const normStatus = String(currentStatus).toUpperCase().replace(/[\s-]+/g, '_');
+  const normStatus = normalizeStatus(currentStatus);
   const isRejected = normStatus === 'REJECTED';
 
-  const stages = [
-    {
-      id: 'SUBMITTED',
-      label: 'Submitted',
-      stepNum: 1,
-      description: 'Lodge & Register',
-      shortDesc: 'Problem registered with GPS & photos',
-    },
-    {
-      id: 'VALIDATED',
-      label: 'Validated',
-      stepNum: 2,
-      description: 'Nodal Verification',
-      shortDesc: 'Govt admin confirms authenticity',
-    },
-    {
-      id: 'ASSIGNED',
-      label: 'Assigned',
-      stepNum: 3,
-      description: 'University Allocation',
-      shortDesc: 'Faculty & student lab assigned',
-    },
-    {
-      id: 'IN_PROGRESS',
-      label: 'In Progress',
-      stepNum: 4,
-      description: 'R&D / Prototyping',
-      shortDesc: 'Engineering solution formulated',
-    },
-    {
-      id: 'SOLVED',
-      label: 'Solved',
-      stepNum: 5,
-      description: 'On-Ground Deployed',
-      shortDesc: 'Civic solution deployed & verified',
-    },
-  ];
+  const stages = WORKFLOW_STAGES.map((id) => ({
+    id,
+    stepNum: STATUS_CONFIG[id].order,
+    label: STATUS_CONFIG[id].display,
+    description: STATUS_CONFIG[id].stepTitle,
+    shortDesc: STATUS_CONFIG[id].stepDescription,
+  }));
 
   // Helper to find date from statusHistory
   const getStageDate = (stageId) => {
-    const entry = statusHistory.find(
-      (h) => String(h.stage).toUpperCase().replace(/[\s-]+/g, '_') === stageId
-    );
+    const entry = statusHistory.find((h) => normalizeStatus(h.stage) === stageId);
     if (!entry) return null;
     try {
       const d = new Date(entry.changedAt);
@@ -88,10 +61,13 @@ export default function StatusStepper({
               Grievance Validation Terminated (Rejected)
             </h4>
             <p className="text-xs text-red-700 leading-relaxed">
-              <strong>Official Reason:</strong> {rejectionReason || 'The lodged grievance could not be validated against civic jurisdiction or societal innovation criteria.'}
+              <strong>Official Reason:</strong>{' '}
+              {rejectionReason ||
+                'The lodged grievance could not be validated against civic jurisdiction or societal innovation criteria.'}
             </p>
             <p className="text-[11px] text-red-600">
-              If you believe this is an error, you may lodge a fresh grievance with updated GPS coordinates and clearer documentation.
+              If you believe this is an error, you may lodge a fresh grievance with
+              updated GPS coordinates and clearer documentation.
             </p>
           </div>
         </div>
@@ -131,21 +107,19 @@ export default function StatusStepper({
                     isStageRejected
                       ? 'bg-red-600 text-white ring-4 ring-red-100 shadow-md'
                       : isCompleted
-                      ? 'bg-primary-900 text-white ring-4 ring-primary-100'
-                      : isCurrent
-                      ? stage.id === 'SOLVED'
-                        ? 'bg-emerald-600 text-white ring-4 ring-emerald-100 shadow-lg'
-                        : 'bg-white border-2 border-primary-600 text-primary-700 ring-4 ring-primary-100 shadow-md'
-                      : 'bg-white border-2 border-slate-300 text-slate-400'
+                        ? 'bg-primary-900 text-white ring-4 ring-primary-100'
+                        : isCurrent
+                          ? stage.id === 'SOLVED'
+                            ? 'bg-emerald-600 text-white ring-4 ring-emerald-100 shadow-lg'
+                            : 'bg-white border-2 border-primary-600 text-primary-700 ring-4 ring-primary-100 shadow-md'
+                          : 'bg-white border-2 border-slate-300 text-slate-400'
                   }`}
                 >
-                  {isStageRejected ? (
-                    '✕'
-                  ) : isCompleted || (isCurrent && stage.id === 'SOLVED') ? (
-                    '✓'
-                  ) : (
-                    stage.stepNum
-                  )}
+                  {isStageRejected
+                    ? '✕'
+                    : isCompleted || (isCurrent && stage.id === 'SOLVED')
+                      ? '✓'
+                      : stage.stepNum}
                 </div>
 
                 {/* Stage Title & Subtitle */}
@@ -155,12 +129,12 @@ export default function StatusStepper({
                       isStageRejected
                         ? 'text-red-700'
                         : isCurrent
-                        ? stage.id === 'SOLVED'
-                          ? 'text-emerald-700'
-                          : 'text-primary-800'
-                        : isCompleted
-                        ? 'text-slate-800'
-                        : 'text-slate-400'
+                          ? stage.id === 'SOLVED'
+                            ? 'text-emerald-700'
+                            : 'text-primary-800'
+                          : isCompleted
+                            ? 'text-slate-800'
+                            : 'text-slate-400'
                     }`}
                   >
                     {isStageRejected ? 'Rejected' : stage.label}
@@ -222,12 +196,12 @@ export default function StatusStepper({
                   isStageRejected
                     ? 'bg-red-600 text-white ring-2 ring-red-100'
                     : isCompleted
-                    ? 'bg-primary-900 text-white'
-                    : isCurrent
-                    ? stage.id === 'SOLVED'
-                      ? 'bg-emerald-600 text-white ring-4 ring-emerald-100'
-                      : 'bg-primary-600 text-white ring-4 ring-primary-100'
-                    : 'bg-white border-2 border-slate-300 text-slate-400'
+                      ? 'bg-primary-900 text-white'
+                      : isCurrent
+                        ? stage.id === 'SOLVED'
+                          ? 'bg-emerald-600 text-white ring-4 ring-emerald-100'
+                          : 'bg-primary-600 text-white ring-4 ring-primary-100'
+                        : 'bg-white border-2 border-slate-300 text-slate-400'
                 }`}
               >
                 {isStageRejected
@@ -245,16 +219,18 @@ export default function StatusStepper({
                       isStageRejected
                         ? 'text-red-700'
                         : isCurrent
-                        ? 'text-primary-800'
-                        : isCompleted
-                        ? 'text-slate-900'
-                        : 'text-slate-400'
+                          ? 'text-primary-800'
+                          : isCompleted
+                            ? 'text-slate-900'
+                            : 'text-slate-400'
                     }`}
                   >
                     {isStageRejected ? 'Stage 2: Validation Rejected' : stage.label}
                   </span>
                   {dateStr && (
-                    <span className="text-[10px] text-slate-400 font-mono">{dateStr}</span>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {dateStr}
+                    </span>
                   )}
                 </div>
 

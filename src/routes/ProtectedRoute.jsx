@@ -1,14 +1,17 @@
 import React from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import LoadState from '../components/ui/LoadState';
+import { useAuth } from '../hooks/useAuth';
 
 /**
  * ProtectedRoute - requires a signed-in user and, optionally, one of allowedRoles.
  * A user with the wrong role is sent to their own dashboard.
  */
 export default function ProtectedRoute({ allowedRoles = [] }) {
-  const { isAuthenticated, role, justLoggedOut } = useAuth();
+  const { isAuthenticated, role, isLoading, justLoggedOut } = useAuth();
   const location = useLocation();
+
+  if (isLoading) return <LoadState />;
 
   if (!isAuthenticated) {
     return (

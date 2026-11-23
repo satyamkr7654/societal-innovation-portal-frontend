@@ -1,18 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 
 export default function Home() {
   const { role } = useAuth();
-  const primaryAction =
-    !role
-      ? { to: '/register', label: 'Report a Problem' }
-      : role === 'citizen'
-        ? { to: '/citizen/submit', label: 'Report a Problem' }
-        : { to: `/${role}/dashboard`, label: 'Go to Dashboard' };
+  const primaryAction = !role
+    ? { to: '/register', label: 'Report a Problem' }
+    : role === 'citizen'
+      ? { to: '/citizen/submit', label: 'Report a Problem' }
+      : { to: `/${role}/dashboard`, label: 'Go to Dashboard' };
 
   const steps = [
     {
@@ -63,7 +62,9 @@ export default function Home() {
           </h1>
 
           <p className="text-slate-200 text-sm sm:text-base leading-relaxed max-w-2xl font-sans">
-            A collaborative platform where local societal problems are reported by citizens, engineered by university students and faculty, supported by industry CSR, and monitored transparently by government officers.
+            A collaborative platform where local societal problems are reported by
+            citizens, engineered by university students and faculty, supported by industry
+            CSR, and monitored transparently by government officers.
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
@@ -74,7 +75,11 @@ export default function Home() {
             </Link>
             {!role && (
               <Link to="/login">
-                <Button variant="outline" size="lg" className="border-slate-400 text-white hover:bg-white/10 hover:text-white">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-slate-400 text-white hover:bg-white/10 hover:text-white"
+                >
                   Stakeholder Login
                 </Button>
               </Link>
@@ -93,7 +98,8 @@ export default function Home() {
             How Societal Problems Get Solved
           </h2>
           <p className="text-slate-600 text-xs sm:text-sm">
-            End-to-end lifecycle tracked in real-time from citizen submission to university implementation.
+            End-to-end lifecycle tracked in real-time from citizen submission to
+            university implementation.
           </p>
         </div>
 

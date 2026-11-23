@@ -13,7 +13,8 @@ export default function IndustryDashboard() {
             Industry & CSR Partner Dashboard
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Sponsor civic technology solutions and empower university innovators in Jharkhand.
+            Sponsor civic technology solutions and empower university innovators in
+            Jharkhand.
           </p>
         </div>
         <Link to="/industry/proposals">
@@ -26,21 +27,27 @@ export default function IndustryDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Available Proposals</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Available Proposals
+            </span>
             <div className="text-3xl font-heading font-bold text-primary">12</div>
             <p className="text-xs text-slate-500">Vetted by Govt. Admin</p>
           </div>
         </Card>
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">My Active Sponsorships</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              My Active Sponsorships
+            </span>
             <div className="text-3xl font-heading font-bold text-amber-600">3</div>
             <p className="text-xs text-slate-500">₹14.2 Lakhs committed</p>
           </div>
         </Card>
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Impact Generated</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Impact Generated
+            </span>
             <div className="text-3xl font-heading font-bold text-emerald-600">4,200+</div>
             <p className="text-xs text-slate-500">Citizens positively impacted</p>
           </div>
@@ -60,7 +67,9 @@ export default function IndustryDashboard() {
         }
       >
         <p className="text-xs text-slate-600 leading-relaxed py-2">
-          In <strong>Phase F6</strong>, industries can browse university proposals by SDG/category, make funding commitments, offer expert mentorship, or provide lab hardware/machinery support.
+          In <strong>Phase F6</strong>, industries can browse university proposals by
+          SDG/category, make funding commitments, offer expert mentorship, or provide lab
+          hardware/machinery support.
         </p>
       </Card>
     </div>

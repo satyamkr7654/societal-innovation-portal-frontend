@@ -2,50 +2,12 @@ import React, { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
+import { getRegisterSchema } from '../../schemas/authSchemas';
 import Button from '../../components/ui/Button';
 import FormInput from '../../components/ui/FormInput';
 import Badge from '../../components/ui/Badge';
-
-/**
- * Dynamic Zod Validation Schema Factory
- */
-const getRegisterSchema = (role) => {
-  const baseSchema = {
-    name: z.string().trim().min(2, 'Full name must be at least 2 characters'),
-    email: z.string().trim().email('Please provide a valid email address'),
-    password: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .regex(/\d/, 'Password must contain at least one number (0-9)'),
-    confirmPassword: z.string().min(1, 'Please confirm your password'),
-  };
-
-  if (role === 'citizen') {
-    baseSchema.phone = z
-      .string()
-      .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian phone number (starting with 6-9)');
-  } else if (role === 'university') {
-    baseSchema.institutionName = z
-      .string()
-      .trim()
-      .min(3, 'Institution name must be at least 3 characters (e.g. BIT Mesra)');
-  } else if (role === 'industry') {
-    baseSchema.companyName = z
-      .string()
-      .trim()
-      .min(2, 'Company/Organization name must be at least 2 characters (e.g. Tata Steel CSR)');
-  }
-
-  return z
-    .object(baseSchema)
-    .refine((data) => data.password === data.confirmPassword, {
-      message: 'Passwords do not match',
-      path: ['confirmPassword'],
-    });
-};
 
 export default function Register() {
   const [selectedRole, setSelectedRole] = useState('citizen');
@@ -128,7 +90,8 @@ export default function Register() {
                 Join the Civic Innovation Ecosystem
               </h1>
               <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                Participate in localized community transformation under the supervision of state nodal authorities.
+                Participate in localized community transformation under the supervision of
+                state nodal authorities.
               </p>
             </div>
 
@@ -137,21 +100,24 @@ export default function Register() {
               <div className="p-3 rounded-lg bg-primary-light/30 border border-primary-light/50 space-y-1">
                 <span className="font-bold text-accent-light">👤 For Citizens:</span>
                 <p className="text-[11px] text-slate-300">
-                  Track resolution progress with verified photos and geotagged GPS timestamps.
+                  Track resolution progress with verified photos and geotagged GPS
+                  timestamps.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-primary-light/30 border border-primary-light/50 space-y-1">
                 <span className="font-bold text-accent-light">🎓 For Universities:</span>
                 <p className="text-[11px] text-slate-300">
-                  Receive state-accredited problem assignments and direct industry CSR grants.
+                  Receive state-accredited problem assignments and direct industry CSR
+                  grants.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-primary-light/30 border border-primary-light/50 space-y-1">
                 <span className="font-bold text-accent-light">🏭 For Industries:</span>
                 <p className="text-[11px] text-slate-300">
-                  Direct Section 135 CSR compliance with verifiable societal impact metrics.
+                  Direct Section 135 CSR compliance with verifiable societal impact
+                  metrics.
                 </p>
               </div>
             </div>
@@ -215,7 +181,8 @@ export default function Register() {
                 ))}
               </div>
               <p className="text-[10px] text-slate-400 mt-1.5 italic">
-                * Govt Admin accounts are provisioned directly by nodal authorities and cannot be self-registered.
+                * Govt Admin accounts are provisioned directly by nodal authorities and
+                cannot be self-registered.
               </p>
             </div>
 

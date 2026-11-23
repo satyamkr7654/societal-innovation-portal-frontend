@@ -1,23 +1,5 @@
-/**
- * mockData.js
- * Comprehensive mock data layer simulating backend database records for Jharkhand civic problems.
- * Structured identically to Spring Boot DTOs for an easy swap in Phase F8.
- */
-
-import { readJson, writeJson } from './storage';
-
-export const CIVIC_CATEGORIES = [
-  { id: 'Water', label: 'Water Contamination & Supply', icon: '💧' },
-  { id: 'Sanitation', label: 'Drainage & Waste Sanitation', icon: '🧹' },
-  { id: 'Health', label: 'Healthcare & Medical Access', icon: '🏥' },
-  { id: 'Agriculture', label: 'Irrigation & Farming Support', icon: '🌾' },
-  { id: 'Education', label: 'School & Technical Education', icon: '📚' },
-  { id: 'Infrastructure', label: 'Roads, Bridges & Transport', icon: '🛣️' },
-  { id: 'Environment', label: 'Air, River & Forest Conservation', icon: '🌲' },
-  { id: 'Energy', label: 'Rural Solar & Power Supply', icon: '⚡' },
-];
-
-export const INITIAL_PROBLEMS = [
+/** Fictional records used to demonstrate the portal. */
+export const SAMPLE_PROBLEMS = [
   {
     id: 'JH-2026-WTR-0101',
     title: 'Contaminated drinking water supply & broken pipeline in Ward 12, Harmu',
@@ -48,7 +30,8 @@ export const INITIAL_PROBLEMS = [
       type: 'Funding & Flow Sensor Hardware',
       amount: '₹2,50,000',
     },
-    photoUrl: 'https://images.unsplash.com/photo-1584824486509-112e4181ff6b?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1584824486509-112e4181ff6b?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-09-14T09:30:00Z',
     statusHistory: [
       {
@@ -61,7 +44,8 @@ export const INITIAL_PROBLEMS = [
         stage: 'VALIDATED',
         changedAt: '2026-09-15T11:15:00Z',
         changedBy: 'Govt. District Nodal Officer, Ranchi',
-        remarks: 'Physical inspection completed. Confirmed microbial contamination in pipeline.',
+        remarks:
+          'Physical inspection completed. Confirmed microbial contamination in pipeline.',
       },
       {
         stage: 'ASSIGNED',
@@ -102,7 +86,8 @@ export const INITIAL_PROBLEMS = [
       type: 'Heavy Desilting Machinery & Polymer Covers',
       amount: '₹4,00,000',
     },
-    photoUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-09-08T08:15:00Z',
     statusHistory: [
       {
@@ -127,14 +112,16 @@ export const INITIAL_PROBLEMS = [
         stage: 'IN_PROGRESS',
         changedAt: '2026-09-18T16:00:00Z',
         changedBy: 'IIT (ISM) Dhanbad Team Lead',
-        remarks: 'Milestone 2 reached: Modular silt filtration grates installed on trial stretch.',
+        remarks:
+          'Milestone 2 reached: Modular silt filtration grates installed on trial stretch.',
       },
     ],
     feedback: null,
   },
   {
     id: 'JH-2026-HLT-0103',
-    title: 'Non-functional cold chain vaccine refrigeration at Primary Health Center, Torpa',
+    title:
+      'Non-functional cold chain vaccine refrigeration at Primary Health Center, Torpa',
     description:
       'Frequent power cuts and inverter battery failures in Torpa rural clinic are ruining infant immunization vaccines (Polio, BCG, Hepatitis). A solar-assisted DC cooling mechanism is urgently required.',
     category: 'Health',
@@ -152,7 +139,8 @@ export const INITIAL_PROBLEMS = [
     },
     assignedUniversity: null,
     industrySupport: null,
-    photoUrl: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-09-21T11:45:00Z',
     statusHistory: [
       {
@@ -172,7 +160,8 @@ export const INITIAL_PROBLEMS = [
   },
   {
     id: 'JH-2026-AGR-0104',
-    title: 'Lack of micro-irrigation facilities for smallholder tribal paddy farmers in Gola',
+    title:
+      'Lack of micro-irrigation facilities for smallholder tribal paddy farmers in Gola',
     description:
       'Over 80 smallholder farmers rely entirely on irregular monsoon rain, despite proximity to the Subarnarekha tributary. Low-cost solar lift irrigation with community drip lines would double crop cycles.',
     category: 'Agriculture',
@@ -200,7 +189,8 @@ export const INITIAL_PROBLEMS = [
       type: 'Solar Submersible Pumps & HDPE Pipelines',
       amount: '₹3,50,000',
     },
-    photoUrl: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-09-02T07:30:00Z',
     statusHistory: [
       {
@@ -225,14 +215,16 @@ export const INITIAL_PROBLEMS = [
         stage: 'IN_PROGRESS',
         changedAt: '2026-09-16T11:00:00Z',
         changedBy: 'BAU Project Team',
-        remarks: 'Milestone 2: Solar pump foundation constructed and test boring completed.',
+        remarks:
+          'Milestone 2: Solar pump foundation constructed and test boring completed.',
       },
     ],
     feedback: null,
   },
   {
     id: 'JH-2026-EDU-0105',
-    title: 'Dilapidated government middle school ceiling leaking near computer laboratory',
+    title:
+      'Dilapidated government middle school ceiling leaking near computer laboratory',
     description:
       'Heavy rainwater seepage from cracked roof slab threatens 15 newly donated desktop computers and creates electric shock hazards for 220 rural students in Chas block.',
     category: 'Education',
@@ -250,7 +242,8 @@ export const INITIAL_PROBLEMS = [
     },
     assignedUniversity: null,
     industrySupport: null,
-    photoUrl: 'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1580582932707-520aed937b7b?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-09-25T14:10:00Z',
     statusHistory: [
       {
@@ -292,7 +285,8 @@ export const INITIAL_PROBLEMS = [
       type: 'Structural Steel Beams & Concrete Mix',
       amount: '₹5,50,000',
     },
-    photoUrl: 'https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-08-10T10:00:00Z',
     statusHistory: [
       {
@@ -323,18 +317,21 @@ export const INITIAL_PROBLEMS = [
         stage: 'SOLVED',
         changedAt: '2026-09-12T17:30:00Z',
         changedBy: 'District Magistrate Office, East Singhbhum',
-        remarks: 'Load test passed (20 tonnes). Culvert road re-opened for civilian traffic.',
+        remarks:
+          'Load test passed (20 tonnes). Culvert road re-opened for civilian traffic.',
       },
     ],
     feedback: {
       rating: 5,
-      comment: 'Superb rapid response by NIT students and Tata Motors. Traffic restored within weeks!',
+      comment:
+        'Superb rapid response by NIT students and Tata Motors. Traffic restored within weeks!',
       submittedAt: '2026-09-14T08:00:00Z',
     },
   },
   {
     id: 'JH-2026-ENV-0107',
-    title: 'Fly-ash runoff from industrial haul roads contaminating local agricultural pond',
+    title:
+      'Fly-ash runoff from industrial haul roads contaminating local agricultural pond',
     description:
       'Uncontrolled coal transport trucks deposit dense toxic fly ash on road margins, which washes into the community water body during monsoon, threatening freshwater fish farming and cattle.',
     category: 'Environment',
@@ -358,7 +355,8 @@ export const INITIAL_PROBLEMS = [
       studentsCount: 3,
     },
     industrySupport: null,
-    photoUrl: 'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-09-18T16:00:00Z',
     statusHistory: [
       {
@@ -402,7 +400,8 @@ export const INITIAL_PROBLEMS = [
     },
     assignedUniversity: null,
     industrySupport: null,
-    photoUrl: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-09-24T18:20:00Z',
     statusHistory: [
       {
@@ -416,7 +415,8 @@ export const INITIAL_PROBLEMS = [
   },
   {
     id: 'JH-2026-SAN-0109',
-    title: 'Illegal dumping of biomedical and commercial waste near public park in Chaibasa',
+    title:
+      'Illegal dumping of biomedical and commercial waste near public park in Chaibasa',
     description:
       'Complaint regarding unauthorized dumping of plastic containers near the public park.',
     category: 'Sanitation',
@@ -435,7 +435,8 @@ export const INITIAL_PROBLEMS = [
     },
     assignedUniversity: null,
     industrySupport: null,
-    photoUrl: 'https://images.unsplash.com/photo-1605600659908-0ef719419d41?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1605600659908-0ef719419d41?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-09-12T12:00:00Z',
     statusHistory: [
       {
@@ -455,7 +456,8 @@ export const INITIAL_PROBLEMS = [
   },
   {
     id: 'JH-2026-INF-0110',
-    title: 'Solar streetlights non-operational on high-accident blind curve on Kanke Road',
+    title:
+      'Solar streetlights non-operational on high-accident blind curve on Kanke Road',
     description:
       'Over 2.5 km of rural stretch between Kanke Dam and Sukurhutu has complete darkness at night. 4 major road accidents occurred in the last two months due to battery failure.',
     category: 'Infrastructure',
@@ -483,7 +485,8 @@ export const INITIAL_PROBLEMS = [
       type: 'LiFePO4 Solar Batteries & Smart Luminaire Kits',
       amount: '₹1,80,000',
     },
-    photoUrl: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80',
+    photoUrl:
+      'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=800&q=80',
     submittedAt: '2026-08-15T09:00:00Z',
     statusHistory: [
       {
@@ -519,97 +522,9 @@ export const INITIAL_PROBLEMS = [
     ],
     feedback: {
       rating: 5,
-      comment: 'Excellent illumination at night now. Accidents have completely stopped on this turn. Great work!',
+      comment:
+        'Excellent illumination at night now. Accidents have completely stopped on this turn. Great work!',
       submittedAt: '2026-09-12T10:00:00Z',
     },
   },
 ];
-
-// v2: citizen ids are stable and photos are stored with the record
-const STORAGE_KEY = 'sih26043_problems_v2';
-
-const CATEGORY_CODES = {
-  Water: 'WTR',
-  Sanitation: 'SAN',
-  Health: 'HLT',
-  Agriculture: 'AGR',
-  Education: 'EDU',
-  Infrastructure: 'INF',
-  Environment: 'ENV',
-  Energy: 'NRG',
-};
-
-const isProblem = (p) =>
-  Boolean(p) &&
-  ['id', 'title', 'description', 'category', 'status', 'submittedAt'].every(
-    (field) => typeof p[field] === 'string'
-  ) &&
-  typeof p.citizen?.id === 'string' &&
-  Array.isArray(p.statusHistory);
-
-/** Returns the saved problems, or the sample data when nothing valid is stored. */
-export function getMockProblems() {
-  return readJson(STORAGE_KEY, Array.isArray, INITIAL_PROBLEMS).filter(isProblem);
-}
-
-export function getProblemById(id) {
-  return getMockProblems().find((p) => p.id === id) || null;
-}
-
-export const isProblemOwner = (problem, user) =>
-  Boolean(user) && problem.citizen.id === user.id;
-
-export function createMockProblem(problemData, user) {
-  const all = getMockProblems();
-  const now = new Date();
-  const lastNumber = Math.max(100, ...all.map((p) => Number(p.id.split('-').pop()) || 0));
-  const code = CATEGORY_CODES[problemData.category] || 'GEN';
-  const submittedAt = now.toISOString();
-
-  const newProblem = {
-    ...problemData,
-    id: `JH-${now.getFullYear()}-${code}-${String(lastNumber + 1).padStart(4, '0')}`,
-    citizen: { id: user.id, name: user.name },
-    status: 'SUBMITTED',
-    rejectionReason: null,
-    submittedAt,
-    assignedUniversity: null,
-    industrySupport: null,
-    statusHistory: [
-      {
-        stage: 'SUBMITTED',
-        changedAt: submittedAt,
-        changedBy: `Citizen ${user.name}`,
-        remarks: 'Problem registered through Jharkhand Societal Innovation Collaboration Portal.',
-      },
-    ],
-    feedback: null,
-  };
-
-  writeJson(STORAGE_KEY, [newProblem, ...all]);
-  return newProblem;
-}
-
-/** Only the citizen who reported a solved problem may review it, and only once. */
-export function saveProblemFeedback(id, feedback, user) {
-  const all = getMockProblems();
-  const problem = all.find((p) => p.id === id);
-  if (!problem) throw new Error('This problem no longer exists.');
-  if (!isProblemOwner(problem, user)) {
-    throw new Error('Only the citizen who reported this problem can review it.');
-  }
-  if (problem.status !== 'SOLVED') {
-    throw new Error('Feedback opens once the problem is solved.');
-  }
-  if (problem.feedback) throw new Error('Feedback has already been submitted.');
-
-  const updated = {
-    ...problem,
-    feedback: { ...feedback, citizenName: user.name, submittedAt: new Date().toISOString() },
-  };
-  writeJson(
-    STORAGE_KEY,
-    all.map((p) => (p.id === id ? updated : p))
-  );
-  return updated;
-}

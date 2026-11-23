@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
+import React from 'react';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
-import { getMockProblems, isProblemOwner } from '../../utils/mockData';
+import { useAuth } from '../../hooks/useAuth';
+import { useAsync } from '../../hooks/useAsync';
+import { listProblems } from '../../services/problemService';
+import { isProblemOwner } from '../../utils/problems';
+import LoadState from '../../components/ui/LoadState';
 
 export default function CitizenDashboard() {
   const { user } = useAuth();
-  const [myProblems] = useState(() =>
-    getMockProblems()
-      .filter((p) => isProblemOwner(p, user))
-      .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
-  );
+  const { data, error, isLoading, reload } = useAsync(listProblems);
+
+  if (isLoading || error) return <LoadState error={error} onRetry={reload} />;
+
+  const myProblems = data
+    .filter((p) => isProblemOwner(p, user))
+    .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
   const countBy = (...statuses) =>
     myProblems.filter((p) => statuses.includes(p.status)).length;
 
@@ -24,7 +29,8 @@ export default function CitizenDashboard() {
             Citizen Dashboard
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Overview of your reported local issues and community resolution status in Jharkhand.
+            Overview of your reported local issues and community resolution status in
+            Jharkhand.
           </p>
         </div>
         <Link to="/citizen/submit">
@@ -40,7 +46,9 @@ export default function CitizenDashboard() {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
               Total Reported
             </span>
-            <div className="text-3xl font-heading font-black text-primary">{myProblems.length}</div>
+            <div className="text-3xl font-heading font-black text-primary">
+              {myProblems.length}
+            </div>
             <p className="text-xs text-slate-500">Civic issues lodged by you</p>
           </div>
         </Card>
@@ -60,7 +68,9 @@ export default function CitizenDashboard() {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
               Resolved & Closed
             </span>
-            <div className="text-3xl font-heading font-black text-emerald-600">{countBy('SOLVED')}</div>
+            <div className="text-3xl font-heading font-black text-emerald-600">
+              {countBy('SOLVED')}
+            </div>
             <p className="text-xs text-slate-500">Solved problems</p>
           </div>
         </Card>

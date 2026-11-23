@@ -1,7 +1,6 @@
 import React from 'react';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
-import Button from '../../components/ui/Button';
 
 export default function Proposals() {
   return (
@@ -29,14 +28,17 @@ export default function Proposals() {
       >
         <div className="space-y-4 py-2">
           <p className="text-xs text-slate-600 leading-relaxed">
-            In <strong>Phase F5</strong>, universities will submit solutions formatted for Industry CSR review:
+            In <strong>Phase F5</strong>, universities will submit solutions formatted for
+            Industry CSR review:
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-slate-600">
             <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <strong>Proposal Formulation:</strong> Technical abstract, methodology, bill of materials, and total funding required.
+              <strong>Proposal Formulation:</strong> Technical abstract, methodology, bill
+              of materials, and total funding required.
             </div>
             <div className="p-3 bg-slate-50 rounded border border-slate-200">
-              <strong>Milestone Tracking:</strong> Step 1 (Design), Step 2 (Prototype), Step 3 (Field Deployment), Step 4 (Citizen Handover).
+              <strong>Milestone Tracking:</strong> Step 1 (Design), Step 2 (Prototype),
+              Step 3 (Field Deployment), Step 4 (Citizen Handover).
             </div>
           </div>
         </div>

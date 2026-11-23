@@ -1,8 +1,9 @@
 import React from 'react';
+import { getStatusConfig } from '../../constants/statusConfig';
 
 /**
  * Badge - Problem status indicator chip using civic status tokens
- * @param {'submitted' | 'validated' | 'assigned' | 'progress' | 'solved' | 'rejected'} status - Problem workflow state
+ * @param {string} status - Any lifecycle status, in any casing
  * @param {'sm' | 'md'} size - Badge size
  */
 export default function Badge({
@@ -12,47 +13,7 @@ export default function Badge({
   showDot = true,
   className = '',
 }) {
-  const normalized = String(status).toLowerCase().replace(/[\s_-]+/g, '');
-
-  const statusConfigs = {
-    submitted: {
-      label: 'SUBMITTED',
-      styles: 'bg-status-submitted-bg text-status-submitted-text border-status-submitted-border',
-      dotColor: 'bg-slate-400',
-    },
-    validated: {
-      label: 'VALIDATED',
-      styles: 'bg-status-validated-bg text-status-validated-text border-status-validated-border',
-      dotColor: 'bg-blue-500',
-    },
-    assigned: {
-      label: 'ASSIGNED',
-      styles: 'bg-status-assigned-bg text-status-assigned-text border-status-assigned-border',
-      dotColor: 'bg-purple-500',
-    },
-    progress: {
-      label: 'IN PROGRESS',
-      styles: 'bg-status-progress-bg text-status-progress-text border-status-progress-border',
-      dotColor: 'bg-amber-500',
-    },
-    inprogress: {
-      label: 'IN PROGRESS',
-      styles: 'bg-status-progress-bg text-status-progress-text border-status-progress-border',
-      dotColor: 'bg-amber-500',
-    },
-    solved: {
-      label: 'SOLVED',
-      styles: 'bg-status-solved-bg text-status-solved-text border-status-solved-border',
-      dotColor: 'bg-emerald-500',
-    },
-    rejected: {
-      label: 'REJECTED',
-      styles: 'bg-status-rejected-bg text-status-rejected-text border-status-rejected-border',
-      dotColor: 'bg-red-500',
-    },
-  };
-
-  const current = statusConfigs[normalized] || statusConfigs.submitted;
+  const config = getStatusConfig(status);
 
   const sizeStyles = {
     sm: 'px-2.5 py-0.5 text-[10px] gap-1.5',
@@ -63,18 +24,18 @@ export default function Badge({
     <span
       className={`
         inline-flex items-center font-bold font-sans rounded-full border tracking-wide uppercase select-none
-        ${current.styles}
+        ${config.bgColor} ${config.textColor} ${config.borderColor}
         ${sizeStyles[size] || sizeStyles.md}
         ${className}
       `}
     >
       {showDot && (
         <span
-          className={`w-1.5 h-1.5 rounded-full shrink-0 ${current.dotColor}`}
+          className={`w-1.5 h-1.5 rounded-full shrink-0 ${config.dotColor}`}
           aria-hidden="true"
         />
       )}
-      <span>{children || current.label}</span>
+      <span>{children || config.display}</span>
     </span>
   );
 }

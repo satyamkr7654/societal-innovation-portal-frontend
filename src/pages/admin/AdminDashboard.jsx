@@ -26,28 +26,36 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Pending Review</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Pending Review
+            </span>
             <div className="text-3xl font-heading font-bold text-amber-600">14</div>
             <p className="text-xs text-slate-500">Awaiting Govt Validation</p>
           </div>
         </Card>
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Assigned to Univ</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Assigned to Univ
+            </span>
             <div className="text-3xl font-heading font-bold text-primary">38</div>
             <p className="text-xs text-slate-500">Active engineering projects</p>
           </div>
         </Card>
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Industry Funded</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Industry Funded
+            </span>
             <div className="text-3xl font-heading font-bold text-purple-600">19</div>
             <p className="text-xs text-slate-500">₹42.5L CSR funding committed</p>
           </div>
         </Card>
         <Card hover={true}>
           <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">Successfully Solved</span>
+            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
+              Successfully Solved
+            </span>
             <div className="text-3xl font-heading font-bold text-emerald-600">27</div>
             <p className="text-xs text-slate-500">Verified and closed</p>
           </div>
@@ -67,7 +75,9 @@ export default function AdminDashboard() {
         }
       >
         <p className="text-xs text-slate-600 leading-relaxed font-sans py-2">
-          In <strong>Phase F4</strong>, this admin screen will feature interactive <strong>Recharts</strong> data visualizations (problem breakdown by district, resolution time trends, and university performance scorecards).
+          In <strong>Phase F4</strong>, this admin screen will feature interactive{' '}
+          <strong>Recharts</strong> data visualizations (problem breakdown by district,
+          resolution time trends, and university performance scorecards).
         </p>
       </Card>
     </div>

@@ -31,9 +31,7 @@ export default function Card({
       {...props}
     >
       {header && (
-        <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
-          {header}
-        </div>
+        <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/50">{header}</div>
       )}
 
       <div className={paddingMap[padding] || paddingMap.md}>{children}</div>
