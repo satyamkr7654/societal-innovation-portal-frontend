@@ -26,6 +26,8 @@ export default function DashboardLayout() {
     if (pathname.includes('/university/assignments')) return 'Assigned Problems';
     if (pathname.includes('/university/proposals')) return 'Proposals & Milestones';
     if (pathname.includes('/industry/dashboard')) return 'CSR Dashboard';
+    if (pathname.includes('/industry/problems')) return 'Browse Proposals';
+    if (pathname.includes('/industry/pledges')) return 'My Pledges';
     if (pathname.includes('/industry/proposals')) return 'Browse Proposals';
     if (pathname.includes('/notifications')) return 'Notifications';
     return 'Portal';

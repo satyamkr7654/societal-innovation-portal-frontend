@@ -27,6 +27,7 @@ export default function UniversityDashboard() {
       `${sum('milestonesDone')} / ${sum('milestonesTotal')}`,
       'Across active projects',
     ],
+    ['Offers to answer', sum('pendingPledges'), 'Support from industry'],
     ['Solved', count('SOLVED'), 'Confirmed by an admin'],
   ];
 
@@ -43,7 +44,7 @@ export default function UniversityDashboard() {
           <Button size="sm">View Assigned Problems &rarr;</Button>
         </Link>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {tiles.map(([label, value, note]) => (
           <Card key={label} padding="sm">
             <span className="text-xs font-semibold text-slate-500">{label}</span>

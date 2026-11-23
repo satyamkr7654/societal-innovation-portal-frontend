@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from '../ui/Card';
+import FundingBar from './FundingBar';
 import { formatRupees } from '../../utils/money';
 import { PROPOSAL_STATUS } from '../../utils/proposal';
 
@@ -98,6 +99,9 @@ export default function ProjectCard({ project }) {
                 </tr>
               </tbody>
             </table>
+            {project.funding && proposal.status === 'APPROVED' && (
+              <FundingBar funding={project.funding} />
+            )}
             {proposal.reviewNote && (
               <p>
                 <strong className="text-slate-900">Admin remarks:</strong>{' '}

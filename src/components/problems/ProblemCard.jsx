@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
 import Button from '../ui/Button';
-import { formatRupees } from '../../utils/money';
 import { getCategory } from '../../constants/categories';
 
 /** One problem in the list. */
@@ -77,10 +76,9 @@ export default function ProblemCard({ problem, isOwner }) {
                   Industry / CSR Sponsor
                 </span>
                 <span className="font-medium text-slate-800 truncate block">
-                  {problem.industrySupport?.sponsor ? (
+                  {problem.supporters.length > 0 ? (
                     <span className="text-emerald-700 font-semibold">
-                      {problem.industrySupport.sponsor} (
-                      {formatRupees(problem.industrySupport.amount)})
+                      {problem.supporters.map((s) => s.sponsor).join(', ')}
                     </span>
                   ) : (
                     <span className="text-slate-400 italic">

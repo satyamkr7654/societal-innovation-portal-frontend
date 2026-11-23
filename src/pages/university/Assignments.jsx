@@ -4,7 +4,16 @@ import AssignmentList from '../../components/university/AssignmentList';
 import { useAsync } from '../../hooks/useAsync';
 import { listAssignments } from '../../services/projectService';
 
-const describe = ({ problem, milestonesDone, milestonesTotal, completionRequested }) => {
+const describe = ({
+  problem,
+  milestonesDone,
+  milestonesTotal,
+  completionRequested,
+  pendingPledges,
+}) => {
+  if (problem.status === 'IN_PROGRESS' && pendingPledges > 0) {
+    return 'Support offer waiting for your answer';
+  }
   if (problem.status === 'ASSIGNED') return 'Waiting for your response';
   if (problem.status === 'IN_PROGRESS' && completionRequested) {
     return 'Waiting for admin confirmation';

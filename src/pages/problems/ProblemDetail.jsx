@@ -181,7 +181,7 @@ function ProblemDossier({ id, listPath, listLabel, Actions }) {
         <div className="space-y-6">
           <LocationCard problem={problem} />
           <UniversityCard university={problem.assignedUniversity} />
-          <SponsorCard support={problem.industrySupport} />
+          <SponsorCard supporters={problem.supporters} />
           <ReporterCard citizen={problem.citizen} phone={isOwner ? user.phone : null} />
         </div>
       </div>

@@ -37,6 +37,8 @@ import Proposals from '../pages/university/Proposals';
 // Industry Pages
 import IndustryDashboard from '../pages/industry/IndustryDashboard';
 import BrowseProposals from '../pages/industry/BrowseProposals';
+import IndustryProblemDetail from '../pages/industry/IndustryProblemDetail';
+import MyPledges from '../pages/industry/MyPledges';
 
 /**
  * Master Route Configuration with Role-Based Route Guards
@@ -153,6 +155,8 @@ const routes = [
                 path: '/industry/proposals',
                 element: <BrowseProposals />,
               },
+              { path: '/industry/problems/:id', element: <IndustryProblemDetail /> },
+              { path: '/industry/pledges', element: <MyPledges /> },
             ],
           },
 

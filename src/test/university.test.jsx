@@ -23,6 +23,7 @@ const step = (id, done) => ({
 const project = (changes) => ({
   canManage: true,
   completionRequestedAt: null,
+  pledges: [],
   milestones: [step(1, true), step(2, false)],
   proposal: { status: 'APPROVED', items: [], total: 0 },
   ...changes,

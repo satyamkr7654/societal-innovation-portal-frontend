@@ -3,6 +3,7 @@ import Button from '../ui/Button';
 import DecisionPanel from '../ui/DecisionPanel';
 import { useDecision } from '../../hooks/useDecision';
 import { requestCompletion } from '../../services/projectService';
+import PledgeResponses from './PledgeResponses';
 import MilestoneForm from './MilestoneForm';
 import ProposalForm from './ProposalForm';
 import RespondForm from './RespondForm';
@@ -21,6 +22,7 @@ export default function UniversityActions({ problem, project, onSaved }) {
 
   return (
     <div className="space-y-6">
+      <PledgeResponses {...shared} />
       {needsProposal && <ProposalForm {...shared} />}
       {next ? (
         <MilestoneForm key={next.id} milestone={next} {...shared} />
