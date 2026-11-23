@@ -1,51 +1,43 @@
 import React from 'react';
-import Card from '../../components/ui/Card';
-import Badge from '../../components/ui/Badge';
+import LoadState from '../../components/ui/LoadState';
+import AssignmentList from '../../components/university/AssignmentList';
+import { useAsync } from '../../hooks/useAsync';
+import { listAssignments } from '../../services/projectService';
+
+const describe = ({ problem, milestonesDone, milestonesTotal, completionRequested }) => {
+  if (problem.status === 'ASSIGNED') return 'Waiting for your response';
+  if (problem.status === 'IN_PROGRESS' && completionRequested) {
+    return 'Waiting for admin confirmation';
+  }
+  return milestonesTotal > 0
+    ? `${milestonesDone} of ${milestonesTotal} milestones`
+    : problem.category;
+};
 
 export default function Assignments() {
+  const { data, error, isLoading, reload } = useAsync(listAssignments);
+  if (isLoading || error) return <LoadState error={error} onRetry={reload} />;
+
+  // New assignments need an answer, so they come first
+  const rows = [
+    ...data.filter((r) => r.problem.status === 'ASSIGNED'),
+    ...data.filter((r) => r.problem.status !== 'ASSIGNED'),
+  ];
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-heading font-bold text-slate-900">
-          Assigned Societal Problems
+          Assigned Problems
         </h2>
-        <p className="text-xs sm:text-sm text-slate-500">
-          Civic problems routed to your institution by the Government of Jharkhand.
+        <p className="text-sm text-slate-500">
+          Open a problem to respond, submit a proposal or record progress.
         </p>
       </div>
-
-      <Card
-        header={
-          <div className="flex items-center justify-between">
-            <h3 className="font-heading font-bold text-sm text-slate-800">
-              Assignment Acceptance & Team Formulation (Phase F5)
-            </h3>
-            <Badge status="assigned" size="sm">
-              Phase F5 Target
-            </Badge>
-          </div>
-        }
-      >
-        <div className="space-y-4 py-2">
-          <p className="text-xs text-slate-600 leading-relaxed">
-            In <strong>Phase F5</strong>, this module will enable:
-          </p>
-          <ul className="text-xs text-slate-600 space-y-2 list-disc list-inside">
-            <li>
-              <strong>Accept or Decline Assignment:</strong> Review problem severity,
-              field location, and accept responsibility.
-            </li>
-            <li>
-              <strong>Faculty Lead & Student Team Tagging:</strong> Form
-              inter-disciplinary engineering student squads.
-            </li>
-            <li>
-              <strong>Initial Field Assessment Notes:</strong> Upload preliminary
-              feasibility report.
-            </li>
-          </ul>
-        </div>
-      </Card>
+      <AssignmentList
+        rows={rows}
+        describe={describe}
+        empty="No problems are assigned to your university yet."
+      />
     </div>
   );
 }

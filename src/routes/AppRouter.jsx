@@ -30,6 +30,7 @@ import Accounts from '../pages/admin/Accounts';
 
 // University Pages
 import UniversityDashboard from '../pages/university/UniversityDashboard';
+import UniversityProblemDetail from '../pages/university/UniversityProblemDetail';
 import Assignments from '../pages/university/Assignments';
 import Proposals from '../pages/university/Proposals';
 
@@ -128,6 +129,10 @@ const routes = [
               {
                 path: '/university/assignments',
                 element: <Assignments />,
+              },
+              {
+                path: '/university/problems/:id',
+                element: <UniversityProblemDetail />,
               },
               {
                 path: '/university/proposals',

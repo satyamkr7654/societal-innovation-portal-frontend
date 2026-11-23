@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import Card from '../ui/Card';
 import Button from '../ui/Button';
+import DecisionPanel from '../ui/DecisionPanel';
+import ProjectReview from './ProjectReview';
+import { useDecision } from '../../hooks/useDecision';
 import { useAsync } from '../../hooks/useAsync';
 import {
   assignProblem,
@@ -20,42 +22,7 @@ export default function ReviewActions({ problem, onSaved }) {
   if (problem.status === 'VALIDATED') {
     return <Assign problem={problem} onSaved={onSaved} />;
   }
-  return null;
-}
-
-function Panel({ title, error, children }) {
-  return (
-    <Card
-      header={<h2 className="font-heading font-bold text-sm text-slate-900">{title}</h2>}
-    >
-      <div className="space-y-4">
-        {children}
-        {error && (
-          <p role="alert" className="text-sm text-red-600 font-medium">
-            {error}
-          </p>
-        )}
-      </div>
-    </Card>
-  );
-}
-
-/** Runs one decision at a time and reports its failure. */
-function useDecision(onSaved) {
-  const [error, setError] = useState('');
-  const [pending, setPending] = useState(null);
-
-  const decide = async (name, action) => {
-    setError('');
-    setPending(name);
-    try {
-      onSaved(await action());
-    } catch (err) {
-      setError(err.message);
-      setPending(null);
-    }
-  };
-  return { error, setError, pending, decide };
+  return <ProjectReview problem={problem} onSaved={onSaved} />;
 }
 
 function ValidateOrReject({ problem, onSaved }) {
@@ -73,7 +40,7 @@ function ValidateOrReject({ problem, onSaved }) {
   };
 
   return (
-    <Panel title="Your decision" error={error}>
+    <DecisionPanel title="Your decision" error={error}>
       <div className="space-y-1.5">
         <label
           htmlFor="decision-notes"
@@ -110,7 +77,7 @@ function ValidateOrReject({ problem, onSaved }) {
           Reject Problem
         </Button>
       </div>
-    </Panel>
+    </DecisionPanel>
   );
 }
 
@@ -129,7 +96,7 @@ function Assign({ problem, onSaved }) {
   };
 
   return (
-    <Panel title="Assign to a university" error={error || loadError?.message}>
+    <DecisionPanel title="Assign to a university" error={error || loadError?.message}>
       {universities?.length === 0 ? (
         <p className="text-sm text-slate-600">
           No approved university accounts yet. Approve one on the Accounts page first.
@@ -183,6 +150,6 @@ function Assign({ problem, onSaved }) {
           </Button>
         </>
       )}
-    </Panel>
+    </DecisionPanel>
   );
 }

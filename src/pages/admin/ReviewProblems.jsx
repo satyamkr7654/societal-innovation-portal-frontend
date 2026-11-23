@@ -8,21 +8,38 @@ import { listProblems } from '../../services/problemService';
 import { DEFAULT_FILTERS, countByStatus, filterProblems } from '../../utils/problems';
 
 const NO_PROBLEMS = [];
+const TAB_LABELS = { ALL: 'All', DECISION: 'Project decisions' };
 
 export default function ReviewProblems() {
   const { data, error, isLoading, reload } = useAsync(listProblems);
   // Kept in the URL, so returning from a problem restores the same list
   const [params, setParams] = useSearchParams();
   const requested = params.get('status');
-  const status = ['ALL', ...ALL_STATUSES].includes(requested) ? requested : 'SUBMITTED';
+  const status = ['ALL', 'DECISION', ...ALL_STATUSES].includes(requested)
+    ? requested
+    : 'SUBMITTED';
   const search = params.get('q') || '';
 
   const problems = data || NO_PROBLEMS;
-  const counts = useMemo(() => countByStatus(problems), [problems]);
+  const counts = useMemo(
+    () => ({
+      ...countByStatus(problems),
+      DECISION: problems.filter((p) => p.pendingDecision).length,
+    }),
+    [problems]
+  );
   // Oldest first, so nobody is kept waiting by newer reports
   const shown = useMemo(
     () =>
-      filterProblems(problems, { ...DEFAULT_FILTERS, status, search, sort: 'oldest' }),
+      filterProblems(
+        status === 'DECISION' ? problems.filter((p) => p.pendingDecision) : problems,
+        {
+          ...DEFAULT_FILTERS,
+          status: status === 'DECISION' ? 'ALL' : status,
+          search,
+          sort: 'oldest',
+        }
+      ),
     [problems, status, search]
   );
 
@@ -53,7 +70,7 @@ export default function ReviewProblems() {
           className="w-full px-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
         />
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {[...ALL_STATUSES, 'ALL'].map((key) => (
+          {['DECISION', ...ALL_STATUSES, 'ALL'].map((key) => (
             <button
               key={key}
               type="button"
@@ -65,7 +82,7 @@ export default function ReviewProblems() {
                   : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
               }`}
             >
-              {key === 'ALL' ? 'All' : STATUS_CONFIG[key].display} ({counts[key]})
+              {TAB_LABELS[key] || STATUS_CONFIG[key].display} ({counts[key]})
             </button>
           ))}
         </div>
@@ -88,6 +105,13 @@ export default function ReviewProblems() {
                     {p.title}
                   </span>
                   <span className="block text-xs text-slate-500 mt-0.5">
+                    {p.pendingDecision && (
+                      <strong className="text-accent-700">
+                        {p.pendingDecision === 'PROPOSAL'
+                          ? 'Proposal to review • '
+                          : 'Completion to confirm • '}
+                      </strong>
+                    )}
                     {p.id} • {p.category} • {p.district} •{' '}
                     {new Date(p.submittedAt).toLocaleDateString('en-IN')}
                   </span>

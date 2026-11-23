@@ -75,6 +75,12 @@ export default function AdminDashboard() {
       to: '/admin/review?status=SOLVED',
     },
     {
+      label: 'Project decisions',
+      value: stats.proposalsToReview + stats.completionsToConfirm,
+      note: 'Proposals and completions',
+      to: '/admin/review?status=DECISION',
+    },
+    {
       label: 'Accounts to approve',
       value: stats.pendingAccounts,
       note: 'Universities and companies',
@@ -112,7 +118,7 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {tiles.map(({ label, value, note, to }) => {
           const tile = (
             <Card hover={Boolean(to)} padding="sm" className="h-full">

@@ -22,6 +22,7 @@ export default function DashboardLayout() {
     if (pathname.includes('/admin/accounts')) return 'Account Approvals';
     if (pathname.includes('/admin/review')) return 'Review Problems';
     if (pathname.includes('/university/dashboard')) return 'University R&D';
+    if (pathname.includes('/university/problems')) return 'Assigned Problems';
     if (pathname.includes('/university/assignments')) return 'Assigned Problems';
     if (pathname.includes('/university/proposals')) return 'Proposals & Milestones';
     if (pathname.includes('/industry/dashboard')) return 'CSR Dashboard';

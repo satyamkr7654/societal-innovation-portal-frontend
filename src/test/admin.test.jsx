@@ -138,6 +138,8 @@ describe('AdminDashboard', () => {
       averageRating: null,
       averageDaysToSolve: null,
       pendingAccounts: 0,
+      proposalsToReview: 0,
+      completionsToConfirm: 0,
     });
     render(
       <MemoryRouter>

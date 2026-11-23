@@ -1,77 +1,59 @@
 import React from 'react';
-import Card from '../../components/ui/Card';
-import Badge from '../../components/ui/Badge';
-import Button from '../../components/ui/Button';
 import { Link } from 'react-router-dom';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
+import LoadState from '../../components/ui/LoadState';
+import { useAsync } from '../../hooks/useAsync';
+import { listAssignments } from '../../services/projectService';
 
 export default function UniversityDashboard() {
+  const { data, error, isLoading, reload } = useAsync(listAssignments);
+  if (isLoading || error) return <LoadState error={error} onRetry={reload} />;
+
+  const count = (status) => data.filter((r) => r.problem.status === status).length;
+  const running = data.filter((r) => r.problem.status === 'IN_PROGRESS');
+  const sum = (field) => running.reduce((total, r) => total + r[field], 0);
+  const tiles = [
+    ['Waiting for your response', count('ASSIGNED'), 'Accept or decline'],
+    ['In progress', running.length, 'Active projects'],
+    [
+      'Proposals to write',
+      running.filter((r) => !r.proposalStatus || r.proposalStatus === 'CHANGES_REQUESTED')
+        .length,
+      'New or needing changes',
+    ],
+    [
+      'Milestones',
+      `${sum('milestonesDone')} / ${sum('milestonesTotal')}`,
+      'Across active projects',
+    ],
+    ['Solved', count('SOLVED'), 'Confirmed by an admin'],
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-heading font-bold text-slate-900">
-            University Innovation Dashboard
+            University Dashboard
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500">
-            Manage assigned civic challenges, student project teams, and proposal
-            milestones.
-          </p>
+          <p className="text-sm text-slate-500">Your university&apos;s projects.</p>
         </div>
         <Link to="/university/assignments">
-          <Button variant="primary" size="sm">
-            View Assigned Problems &rarr;
-          </Button>
+          <Button size="sm">View Assigned Problems &rarr;</Button>
         </Link>
       </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-        <Card hover={true}>
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
-              Assigned Challenges
-            </span>
-            <div className="text-3xl font-heading font-bold text-purple-700">5</div>
-            <p className="text-xs text-slate-500">Awaiting proposal submission</p>
-          </div>
-        </Card>
-        <Card hover={true}>
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
-              Active Proposals
-            </span>
-            <div className="text-3xl font-heading font-bold text-primary">3</div>
-            <p className="text-xs text-slate-500">Submitted for industry funding</p>
-          </div>
-        </Card>
-        <Card hover={true}>
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
-              Milestones Completed
-            </span>
-            <div className="text-3xl font-heading font-bold text-emerald-600">8 / 12</div>
-            <p className="text-xs text-slate-500">Field prototypes deployed</p>
-          </div>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        {tiles.map(([label, value, note]) => (
+          <Card key={label} padding="sm">
+            <span className="text-xs font-semibold text-slate-500">{label}</span>
+            <div className="text-2xl font-heading font-bold text-primary mt-1">
+              {value}
+            </div>
+            <p className="text-xs text-slate-500 mt-1">{note}</p>
+          </Card>
+        ))}
       </div>
-
-      <Card
-        header={
-          <div className="flex items-center justify-between">
-            <h3 className="font-heading font-bold text-sm text-slate-800">
-              University R&D Roadmap (Phase F5)
-            </h3>
-            <Badge status="assigned" size="sm">
-              Phase F5 Target
-            </Badge>
-          </div>
-        }
-      >
-        <p className="text-xs text-slate-600 leading-relaxed py-2">
-          In <strong>Phase F5</strong>, universities will have proposal drafting editors
-          (budget breakdown, hardware/software specs, timeline), team member assignment,
-          and milestone status reporting.
-        </p>
-      </Card>
     </div>
   );
 }

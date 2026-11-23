@@ -8,6 +8,7 @@ import AuditTimeline from '../../components/problems/AuditTimeline';
 import EvidenceCard from '../../components/problems/EvidenceCard';
 import FeedbackCard from '../../components/problems/FeedbackCard';
 import LocationCard from '../../components/problems/LocationCard';
+import ProjectCard from '../../components/problems/ProjectCard';
 import ReporterCard from '../../components/problems/ReporterCard';
 import SponsorCard from '../../components/problems/SponsorCard';
 import UniversityCard from '../../components/problems/UniversityCard';
@@ -15,6 +16,7 @@ import { getCategory } from '../../constants/categories';
 import { useAsync } from '../../hooks/useAsync';
 import { useAuth } from '../../hooks/useAuth';
 import { getProblem } from '../../services/problemService';
+import { getProject } from '../../services/projectService';
 import { isProblemOwner } from '../../utils/problems';
 
 /** One problem. `Actions` adds role-specific controls above the details. */
@@ -30,8 +32,13 @@ export default function ProblemDetail({
 
 function ProblemDossier({ id, listPath, listLabel, Actions }) {
   const { user } = useAuth();
-  const load = useCallback(() => getProblem(id), [id]);
-  const { data: problem, error, isLoading, reload, setData } = useAsync(load);
+  const load = useCallback(async () => {
+    const problem = await getProblem(id);
+    return { problem, project: problem && (await getProject(id)) };
+  }, [id]);
+  const { data, error, isLoading, reload, setData } = useAsync(load);
+  const problem = data?.problem;
+  const project = data?.project;
   const [copiedId, setCopiedId] = useState(false);
 
   const handleCopyId = async () => {
@@ -155,14 +162,19 @@ function ProblemDossier({ id, listPath, listLabel, Actions }) {
         />
       </div>
 
-      {Actions && <Actions key={problem.status} problem={problem} onSaved={setData} />}
+      {Actions && <Actions problem={problem} project={project} onSaved={reload} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2 space-y-6">
           <EvidenceCard problem={problem} />
+          {project && <ProjectCard project={project} />}
           <AuditTimeline history={problem.statusHistory} />
           {showFeedback && (
-            <FeedbackCard problem={problem} isOwner={isOwner} onSaved={setData} />
+            <FeedbackCard
+              problem={problem}
+              isOwner={isOwner}
+              onSaved={(saved) => setData({ ...data, problem: saved })}
+            />
           )}
         </div>
 
