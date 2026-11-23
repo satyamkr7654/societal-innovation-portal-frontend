@@ -1,9 +1,9 @@
 export const PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
-const MAX_SIDE = 1024;
+const MAX_SIDE = 1600;
 
-/** Shrinks a photo and returns a data URL, which (unlike a blob: URL) survives a reload. */
-export async function photoToDataUrl(file) {
+/** Shrinks a photo to a JPEG, which also drops embedded GPS data before upload. */
+export async function photoToJpeg(file) {
   let bitmap;
   try {
     bitmap = await createImageBitmap(file);
@@ -19,5 +19,7 @@ export async function photoToDataUrl(file) {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
   bitmap.close();
-  return canvas.toDataURL('image/jpeg', 0.75);
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+  if (!blob) throw new Error('This photo could not be processed. Please try another.');
+  return blob;
 }

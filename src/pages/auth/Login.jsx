@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useAuth } from '../../hooks/useAuth';
-import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '../../services/authService';
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '../../constants/demoAccounts';
 import { loginSchema } from '../../schemas/authSchemas';
 import Button from '../../components/ui/Button';
 import FormInput from '../../components/ui/FormInput';
@@ -133,35 +133,35 @@ export default function Login() {
                   Official Access
                 </Badge>
               </div>
-              <p className="text-xs text-slate-500">
-                Enter your credentials or choose a quick evaluation account below.
-              </p>
+              <p className="text-xs text-slate-500">Enter your email and password.</p>
             </div>
 
             {/* Quick Demo Accounts Helper Bar */}
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
-                  Evaluation Accounts (1-Click Fill):
-                </span>
-                <span className="text-[10px] font-mono text-primary font-semibold">
-                  SIH Demo
-                </span>
+            {DEMO_ACCOUNTS.length > 0 && (
+              <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                    Evaluation Accounts (1-Click Fill):
+                  </span>
+                  <span className="text-[10px] font-mono text-primary font-semibold">
+                    SIH Demo
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {DEMO_ACCOUNTS.map((acc) => (
+                    <button
+                      key={acc.role}
+                      type="button"
+                      onClick={() => handleQuickFill(acc)}
+                      className="px-2.5 py-1.5 bg-white hover:bg-primary/5 hover:border-primary/40 border border-slate-200 rounded text-left text-xs font-semibold text-slate-700 transition cursor-pointer flex items-center justify-between shadow-2xs"
+                    >
+                      <span>{acc.label}</span>
+                      <span className="text-[10px] text-primary">&rarr;</span>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {DEMO_ACCOUNTS.map((acc) => (
-                  <button
-                    key={acc.role}
-                    type="button"
-                    onClick={() => handleQuickFill(acc)}
-                    className="px-2.5 py-1.5 bg-white hover:bg-primary/5 hover:border-primary/40 border border-slate-200 rounded text-left text-xs font-semibold text-slate-700 transition cursor-pointer flex items-center justify-between shadow-2xs"
-                  >
-                    <span>{acc.label}</span>
-                    <span className="text-[10px] text-primary">&rarr;</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            )}
 
             {/* Protected Route Notice */}
             {from && !authError && (

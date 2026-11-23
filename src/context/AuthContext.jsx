@@ -1,41 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import LoadState from '../components/ui/LoadState';
+import { useAsync } from '../hooks/useAsync';
+import { setUnauthorizedHandler } from '../services/apiClient';
 import * as authService from '../services/authService';
 import { AuthContext } from './AuthContextValue';
 
 /** Provides the current user plus login, register and logout. */
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const {
+    data: user,
+    error,
+    isLoading,
+    reload,
+    setData: setUser,
+  } = useAsync(authService.restoreSession);
   // Lets the login page tell "you signed out" apart from "you need to sign in"
   const [justLoggedOut, setJustLoggedOut] = useState(false);
 
   useEffect(() => {
-    let isActive = true;
-    authService
-      .restoreSession()
-      .catch(() => null)
-      .then((restored) => {
-        if (!isActive) return;
-        setUser(restored);
-        setIsLoading(false);
-      });
-    return () => {
-      isActive = false;
-    };
-  }, []);
+    setUnauthorizedHandler(() => setUser(null)); // the session expired
+    return () => setUnauthorizedHandler(() => {});
+  }, [setUser]);
 
-  const login = async (credentials) => {
-    const signedIn = await authService.login(credentials);
-    setJustLoggedOut(false);
-    setUser(signedIn);
-    return signedIn;
-  };
+  const login = useCallback(
+    async (credentials) => {
+      const signedIn = await authService.login(credentials);
+      setJustLoggedOut(false);
+      setUser(signedIn);
+      return signedIn;
+    },
+    [setUser]
+  );
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await authService.logout();
     setJustLoggedOut(true);
     setUser(null);
-  };
+  }, [setUser]);
+
+  // Server unreachable: do not pretend the user is signed out
+  if (error) return <LoadState error={error} onRetry={reload} />;
 
   const value = {
     user,

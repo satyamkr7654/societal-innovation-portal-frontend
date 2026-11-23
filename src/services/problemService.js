@@ -1,33 +1,34 @@
-import { photoToDataUrl } from '../utils/image';
-import { getSessionUser } from './mock/authStore';
-import * as store from './mock/problemStore';
+import { photoToJpeg } from '../utils/image';
+import { request } from './apiClient';
 
-/**
- * The only module pages use to read or change problems.
- * Every function is async, and the acting user comes from the session rather than the
- * caller, so the Phase 4 HTTP API can replace the bodies without changing any page.
- */
-function requireUser() {
-  const user = getSessionUser();
-  if (!user) throw new Error('Please sign in to continue.');
-  return user;
+/** The only module pages use to read or change problems. The server decides who may. */
+export function listProblems() {
+  return request('/problems');
 }
 
-export async function listProblems() {
-  return store.getProblems();
-}
-
+/** Resolves to null when no such problem exists. */
 export async function getProblem(id) {
-  return store.getProblemById(id);
+  try {
+    return await request(`/problems/${encodeURIComponent(id)}`);
+  } catch (error) {
+    if (error.status === 404) return null;
+    throw error;
+  }
 }
 
 export async function createProblem({ photo, ...problem }) {
-  const user = requireUser();
-  if (user.role !== 'citizen') throw new Error('Only citizens can report problems.');
-  const photoUrl = photo ? await photoToDataUrl(photo) : null;
-  return store.createProblem({ ...problem, photoUrl }, user);
+  const form = new FormData();
+  form.append(
+    'problem',
+    new Blob([JSON.stringify(problem)], { type: 'application/json' })
+  );
+  if (photo) form.append('photo', await photoToJpeg(photo), 'photo.jpg');
+  return request('/problems', { method: 'POST', body: form });
 }
 
-export async function submitFeedback(problemId, feedback) {
-  return store.saveFeedback(problemId, feedback, requireUser());
+export function submitFeedback(problemId, feedback) {
+  return request(`/problems/${encodeURIComponent(problemId)}/feedback`, {
+    method: 'POST',
+    body: feedback,
+  });
 }

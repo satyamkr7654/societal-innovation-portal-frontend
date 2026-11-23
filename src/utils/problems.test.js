@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getStatusConfig, normalizeStatus } from '../constants/statusConfig';
-import { SAMPLE_PROBLEMS } from '../services/mock/sampleProblems';
+import { SAMPLE_PROBLEMS } from '../test/sampleProblems';
 import { JHARKHAND_DISTRICTS, findDistrict } from './jharkhand';
 import {
   DEFAULT_FILTERS,

@@ -1,20 +1,21 @@
-import * as store from './mock/authStore';
+import { request } from './apiClient';
 
-/** The only module the app uses for accounts. Phase 4 swaps the bodies for HTTP calls. */
-export async function restoreSession() {
-  return store.getSessionUser();
+/** Resolves to the signed-in user, or null. */
+export function restoreSession() {
+  return request('/auth/me');
 }
 
-export async function login(credentials) {
-  return store.signIn(credentials);
+export function login({ email, password }) {
+  return request('/auth/login', { method: 'POST', body: { email, password } });
 }
 
-export async function register(details) {
-  return store.registerAccount(details);
+export function register({ name, email, password, role, phone, organizationName }) {
+  return request('/auth/register', {
+    method: 'POST',
+    body: { name, email, password, role, phone, organizationName },
+  });
 }
 
-export async function logout() {
-  store.signOut();
+export function logout() {
+  return request('/auth/logout', { method: 'POST' });
 }
-
-export { DEMO_ACCOUNTS, DEMO_PASSWORD } from './mock/authStore';

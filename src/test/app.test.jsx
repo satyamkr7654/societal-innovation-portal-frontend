@@ -1,15 +1,22 @@
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import FeedbackCard from '../components/problems/FeedbackCard';
 import LoadState from '../components/ui/LoadState';
 import { AuthProvider } from '../context/AuthContext';
 import { useAsync } from '../hooks/useAsync';
 import Login from '../pages/auth/Login';
 import ProtectedRoute from '../routes/ProtectedRoute';
-import { DEMO_ACCOUNTS, DEMO_PASSWORD, login } from '../services/authService';
+import { request, setUnauthorizedHandler } from '../services/apiClient';
+import { login, restoreSession } from '../services/authService';
+
+vi.mock('../services/authService');
+
+const userWithRole = (role) => ({ id: 'u1', name: 'Test', role });
+
+beforeEach(() => restoreSession.mockResolvedValue(null));
 
 const renderAt = (path) =>
   render(
@@ -25,11 +32,7 @@ const renderAt = (path) =>
       </MemoryRouter>
     </AuthProvider>
   );
-const loginAs = (role) =>
-  login({
-    email: DEMO_ACCOUNTS.find((a) => a.role === role).email,
-    password: DEMO_PASSWORD,
-  });
+const loginAs = (role) => restoreSession.mockResolvedValue(userWithRole(role));
 
 describe('ProtectedRoute', () => {
   it('sends visitors to login', async () => {
@@ -37,14 +40,35 @@ describe('ProtectedRoute', () => {
     expect(await screen.findByText(/please sign in to access/i)).toBeTruthy();
   });
   it('sends the wrong role to its own dashboard', async () => {
-    await loginAs('citizen');
+    loginAs('citizen');
     renderAt('/admin/review');
     expect(await screen.findByText('citizen home')).toBeTruthy();
     expect(screen.queryByText('admin area')).toBeNull();
   });
   it('lets the right role in', async () => {
-    await loginAs('admin');
+    loginAs('admin');
     renderAt('/admin/review');
+    expect(await screen.findByText('admin area')).toBeTruthy();
+  });
+});
+
+describe('session', () => {
+  it('returns to login when the server ends the session', async () => {
+    loginAs('admin');
+    renderAt('/admin/review');
+    await screen.findByText('admin area');
+    vi.stubGlobal('fetch', async () => new Response('{"message":"no"}', { status: 401 }));
+    await act(() => request('/problems').catch(() => {}));
+    vi.unstubAllGlobals();
+    expect(await screen.findByText(/please sign in to access/i)).toBeTruthy();
+    setUnauthorizedHandler(() => {});
+  });
+  it('shows a retry when the server is down, not the login page', async () => {
+    restoreSession.mockRejectedValueOnce(new Error('Server down'));
+    renderAt('/admin/review');
+    expect(await screen.findByText('Server down')).toBeTruthy();
+    loginAs('admin');
+    await userEvent.click(screen.getByRole('button', { name: /try again/i }));
     expect(await screen.findByText('admin area')).toBeTruthy();
   });
 });
@@ -52,6 +76,9 @@ describe('ProtectedRoute', () => {
 describe('Login page', () => {
   it('shows an error for a wrong password, then signs in', async () => {
     const user = userEvent.setup();
+    login
+      .mockRejectedValueOnce(new Error('Incorrect email or password.'))
+      .mockResolvedValueOnce(userWithRole('citizen'));
     renderAt('/login');
     await user.type(screen.getByLabelText(/email/i), 'citizen.ramesh@gmail.com');
     await user.type(screen.getByLabelText(/password/i), 'wrong');
@@ -59,7 +86,7 @@ describe('Login page', () => {
     expect((await screen.findByRole('alert')).textContent).toMatch(/incorrect/i);
 
     await user.clear(screen.getByLabelText(/password/i));
-    await user.type(screen.getByLabelText(/password/i), DEMO_PASSWORD);
+    await user.type(screen.getByLabelText(/password/i), 'right');
     await user.click(screen.getByRole('button', { name: /sign in to dashboard/i }));
     expect(await screen.findByText('citizen home')).toBeTruthy();
   });

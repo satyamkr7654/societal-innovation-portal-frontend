@@ -114,7 +114,7 @@ export default function DashboardLayout() {
             {/* Logout Button */}
             <button
               type="button"
-              onClick={logout}
+              onClick={() => logout().catch((error) => window.alert(error.message))}
               className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
               title="Sign Out"
             >

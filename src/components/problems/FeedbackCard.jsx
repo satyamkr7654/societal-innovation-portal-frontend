@@ -88,9 +88,9 @@ export default function FeedbackCard({ problem, isOwner, onSaved }) {
             </span>
           </div>
 
-          {(feedback.remarks || feedback.comment) && (
+          {feedback.remarks && (
             <p className="text-xs sm:text-sm text-slate-700 italic bg-white p-3 rounded-lg border border-emerald-100">
-              &quot;{feedback.remarks || feedback.comment}&quot;
+              &quot;{feedback.remarks}&quot;
             </p>
           )}
 

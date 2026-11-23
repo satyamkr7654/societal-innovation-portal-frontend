@@ -1,5 +1,6 @@
 import React from 'react';
 import Card from '../ui/Card';
+import { formatRupees } from '../../utils/money';
 
 /** Industry or CSR support pledged. */
 export default function SponsorCard({ support }) {
@@ -23,7 +24,7 @@ export default function SponsorCard({ support }) {
               {support.sponsor}
             </h4>
             <p className="text-emerald-700 font-semibold text-xs mt-0.5">
-              Funding Pledged: {support.amount}
+              Funding Pledged: {formatRupees(support.amount)}
             </p>
           </div>
 

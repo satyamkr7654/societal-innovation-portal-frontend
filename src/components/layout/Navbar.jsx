@@ -13,8 +13,13 @@ export default function Navbar() {
     { label: 'How It Works', path: '/#how-it-works' },
   ];
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      window.alert(error.message);
+      return;
+    }
     setIsMobileMenuOpen(false);
     navigate('/');
   };
