@@ -5,6 +5,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import PublicLayout from '../components/layout/PublicLayout';
 import DashboardLayout from '../components/layout/DashboardLayout';
 import ProtectedRoute from './ProtectedRoute';
+import RootLayout from './RootLayout';
+import RouteError from '../pages/RouteError';
 
 // Public & Shared Pages
 import Home from '../pages/Home';
@@ -36,7 +38,7 @@ import BrowseProposals from '../pages/industry/BrowseProposals';
 /**
  * Master Route Configuration with Role-Based Route Guards
  */
-const router = createBrowserRouter([
+const routes = [
   // 1. PUBLIC LAYOUT ROUTES (Accessible to everyone)
   {
     element: <PublicLayout />,
@@ -67,11 +69,11 @@ const router = createBrowserRouter([
 
   // 2. DASHBOARD LAYOUT ROUTES (Protected with Authentication & Role Guards)
   {
-    element: <DashboardLayout />,
+    // Level 1: the user must be signed in before any dashboard UI renders
+    element: <ProtectedRoute />,
     children: [
       {
-        // Level 1: Global Authentication Check (User must be logged in)
-        element: <ProtectedRoute />,
+        element: <DashboardLayout />,
         children: [
           // Level 2A: Citizen Only Routes
           {
@@ -154,6 +156,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+];
+
+const router = createBrowserRouter([
+  { element: <RootLayout />, errorElement: <RouteError />, children: routes },
 ]);
 
 export default function AppRouter() {

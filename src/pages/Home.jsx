@@ -1,10 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 
 export default function Home() {
+  const { role } = useAuth();
+  const primaryAction =
+    !role
+      ? { to: '/register', label: 'Report a Problem' }
+      : role === 'citizen'
+        ? { to: '/citizen/submit', label: 'Report a Problem' }
+        : { to: `/${role}/dashboard`, label: 'Go to Dashboard' };
+
   const steps = [
     {
       role: '1. CITIZEN',
@@ -58,22 +67,24 @@ export default function Home() {
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link to="/register">
-              <Button variant="primary" size="lg" className="bg-accent hover:bg-accent-dark text-white border-none shadow-md">
-                Report a Problem
+            <Link to={primaryAction.to}>
+              <Button variant="accent" size="lg">
+                {primaryAction.label}
               </Button>
             </Link>
-            <Link to="/login">
-              <Button variant="outline" size="lg" className="border-slate-400 text-white hover:bg-white/10 hover:text-white">
-                Stakeholder Login
-              </Button>
-            </Link>
+            {!role && (
+              <Link to="/login">
+                <Button variant="outline" size="lg" className="border-slate-400 text-white hover:bg-white/10 hover:text-white">
+                  Stakeholder Login
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
       </section>
 
       {/* 4-Pillar Collaborative Architecture */}
-      <section className="space-y-6" id="how-it-works">
+      <section className="space-y-6 scroll-mt-20" id="how-it-works">
         <div className="text-center max-w-2xl mx-auto space-y-2">
           <span className="text-xs font-bold font-mono uppercase tracking-wider text-accent-dark">
             Collaborative Workflow

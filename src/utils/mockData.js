@@ -4,6 +4,8 @@
  * Structured identically to Spring Boot DTOs for an easy swap in Phase F8.
  */
 
+import { readJson, writeJson } from './storage';
+
 export const CIVIC_CATEGORIES = [
   { id: 'Water', label: 'Water Contamination & Supply', icon: '💧' },
   { id: 'Sanitation', label: 'Drainage & Waste Sanitation', icon: '🧹' },
@@ -33,7 +35,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_01',
       name: 'Ramesh Kumar',
-      phone: '9835123450',
     },
     assignedUniversity: {
       id: 'univ_01',
@@ -88,7 +89,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_02',
       name: 'Pooja Verma',
-      phone: '9431109823',
     },
     assignedUniversity: {
       id: 'univ_02',
@@ -149,7 +149,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_03',
       name: 'Dr. Alok Tirkey',
-      phone: '9835771234',
     },
     assignedUniversity: null,
     industrySupport: null,
@@ -188,7 +187,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_04',
       name: 'Shambu Mahto',
-      phone: '9470129845',
     },
     assignedUniversity: {
       id: 'univ_03',
@@ -249,7 +247,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_05',
       name: 'Sunita Devi',
-      phone: '9835901234',
     },
     assignedUniversity: null,
     industrySupport: null,
@@ -273,7 +270,7 @@ export const INITIAL_PROBLEMS = [
     category: 'Infrastructure',
     status: 'SOLVED',
     rejectionReason: null,
-    district: 'Jamshedpur',
+    district: 'East Singhbhum',
     location: {
       address: 'Old Purulia Road, Mango, Jamshedpur, Jharkhand 831012',
       lat: 22.8214,
@@ -282,7 +279,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_06',
       name: 'Vikramaditya Roy',
-      phone: '9431987654',
     },
     assignedUniversity: {
       id: 'univ_04',
@@ -353,7 +349,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_07',
       name: 'Devendra Oraon',
-      phone: '9835445566',
     },
     assignedUniversity: {
       id: 'univ_05',
@@ -404,7 +399,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_08',
       name: 'Bimal Hansda',
-      phone: '9471123489',
     },
     assignedUniversity: null,
     industrySupport: null,
@@ -429,7 +423,7 @@ export const INITIAL_PROBLEMS = [
     status: 'REJECTED',
     rejectionReason:
       'Duplicate grievance. The same municipal issue is already registered under Case #JH-2026-SAN-0084 and cleanup tenders have been awarded by Chaibasa Municipality.',
-    district: 'Chaibasa',
+    district: 'West Singhbhum',
     location: {
       address: 'Near Jubilee Lake Park, Chaibasa, West Singhbhum, Jharkhand 833201',
       lat: 22.5518,
@@ -438,7 +432,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_09',
       name: 'Mohit Agarwal',
-      phone: '9835001122',
     },
     assignedUniversity: null,
     industrySupport: null,
@@ -477,7 +470,6 @@ export const INITIAL_PROBLEMS = [
     citizen: {
       id: 'usr_cit_01',
       name: 'Ramesh Kumar',
-      phone: '9835123450',
     },
     assignedUniversity: {
       id: 'univ_01',
@@ -533,71 +525,91 @@ export const INITIAL_PROBLEMS = [
   },
 ];
 
-// In-Memory mutable data store (persisted in localStorage for demo interactivity)
-const STORAGE_KEY = 'sih26043_mock_problems';
+// v2: citizen ids are stable and photos are stored with the record
+const STORAGE_KEY = 'sih26043_problems_v2';
 
+const CATEGORY_CODES = {
+  Water: 'WTR',
+  Sanitation: 'SAN',
+  Health: 'HLT',
+  Agriculture: 'AGR',
+  Education: 'EDU',
+  Infrastructure: 'INF',
+  Environment: 'ENV',
+  Energy: 'NRG',
+};
+
+const isProblem = (p) =>
+  Boolean(p) &&
+  ['id', 'title', 'description', 'category', 'status', 'submittedAt'].every(
+    (field) => typeof p[field] === 'string'
+  ) &&
+  typeof p.citizen?.id === 'string' &&
+  Array.isArray(p.statusHistory);
+
+/** Returns the saved problems, or the sample data when nothing valid is stored. */
 export function getMockProblems() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      return JSON.parse(saved);
-    }
-  } catch {
-    // Fallback to initial seed
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_PROBLEMS));
-  return INITIAL_PROBLEMS;
+  return readJson(STORAGE_KEY, Array.isArray, INITIAL_PROBLEMS).filter(isProblem);
 }
 
 export function getProblemById(id) {
-  const all = getMockProblems();
-  return all.find((p) => p.id === id) || null;
+  return getMockProblems().find((p) => p.id === id) || null;
 }
 
-export function createMockProblem(problemData) {
+export const isProblemOwner = (problem, user) =>
+  Boolean(user) && problem.citizen.id === user.id;
+
+export function createMockProblem(problemData, user) {
   const all = getMockProblems();
-  const newId = `JH-2026-${(problemData.category || 'GEN').slice(0, 3).toUpperCase()}-${String(
-    all.length + 101
-  ).padStart(4, '0')}`;
+  const now = new Date();
+  const lastNumber = Math.max(100, ...all.map((p) => Number(p.id.split('-').pop()) || 0));
+  const code = CATEGORY_CODES[problemData.category] || 'GEN';
+  const submittedAt = now.toISOString();
 
   const newProblem = {
     ...problemData,
-    id: newId,
+    id: `JH-${now.getFullYear()}-${code}-${String(lastNumber + 1).padStart(4, '0')}`,
+    citizen: { id: user.id, name: user.name },
     status: 'SUBMITTED',
     rejectionReason: null,
-    submittedAt: new Date().toISOString(),
+    submittedAt,
     assignedUniversity: null,
     industrySupport: null,
     statusHistory: [
       {
         stage: 'SUBMITTED',
-        changedAt: new Date().toISOString(),
-        changedBy: problemData.citizen?.name || 'Citizen',
+        changedAt: submittedAt,
+        changedBy: `Citizen ${user.name}`,
         remarks: 'Problem registered through Jharkhand Societal Innovation Collaboration Portal.',
       },
     ],
     feedback: null,
   };
 
-  const updated = [newProblem, ...all];
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  writeJson(STORAGE_KEY, [newProblem, ...all]);
   return newProblem;
 }
 
-export function saveProblemFeedback(id, feedback) {
+/** Only the citizen who reported a solved problem may review it, and only once. */
+export function saveProblemFeedback(id, feedback, user) {
   const all = getMockProblems();
-  const updated = all.map((p) => {
-    if (p.id === id) {
-      return {
-        ...p,
-        feedback: {
-          ...feedback,
-          submittedAt: new Date().toISOString(),
-        },
-      };
-    }
-    return p;
-  });
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  return updated.find((p) => p.id === id);
+  const problem = all.find((p) => p.id === id);
+  if (!problem) throw new Error('This problem no longer exists.');
+  if (!isProblemOwner(problem, user)) {
+    throw new Error('Only the citizen who reported this problem can review it.');
+  }
+  if (problem.status !== 'SOLVED') {
+    throw new Error('Feedback opens once the problem is solved.');
+  }
+  if (problem.feedback) throw new Error('Feedback has already been submitted.');
+
+  const updated = {
+    ...problem,
+    feedback: { ...feedback, citizenName: user.name, submittedAt: new Date().toISOString() },
+  };
+  writeJson(
+    STORAGE_KEY,
+    all.map((p) => (p.id === id ? updated : p))
+  );
+  return updated;
 }

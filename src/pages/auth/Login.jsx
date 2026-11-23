@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
 import { useAuth } from '../../context/AuthContext';
+import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '../../utils/mockAuth';
 import Button from '../../components/ui/Button';
 import FormInput from '../../components/ui/FormInput';
 import Badge from '../../components/ui/Badge';
@@ -15,6 +16,7 @@ import Badge from '../../components/ui/Badge';
 const loginSchema = z.object({
   email: z
     .string()
+    .trim()
     .min(1, 'Email address is required')
     .email('Please enter a valid email address'),
   password: z.string().min(1, 'Password is required'),
@@ -22,21 +24,12 @@ const loginSchema = z.object({
 
 export default function Login() {
   const [authError, setAuthError] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const navigate = useNavigate();
   const location = useLocation();
-  const { login } = useAuth();
+  const { user, login } = useAuth();
+  const registeredEmail = location.state?.registeredEmail;
 
   // If redirected by ProtectedRoute, capture the intended path
-  const fromLocation = location.state?.from?.pathname;
-
-  // Demo accounts for instant 1-click test fill during evaluation
-  const demoAccounts = [
-    { role: 'citizen', email: 'citizen.ramesh@gmail.com', label: 'Citizen', path: '/citizen/dashboard' },
-    { role: 'admin', email: 'admin.dept@jharkhand.gov.in', label: 'Govt Admin', path: '/admin/dashboard' },
-    { role: 'university', email: 'faculty@bitmesra.ac.in', label: 'University', path: '/university/dashboard' },
-    { role: 'industry', email: 'csr@tatasteel.com', label: 'Industry CSR', path: '/industry/dashboard' },
-  ];
+  const from = location.state?.from;
 
   const {
     register,
@@ -46,36 +39,30 @@ export default function Login() {
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: 'onTouched',
+    defaultValues: { email: registeredEmail || '', password: '' },
   });
 
   const handleQuickFill = (account) => {
     setValue('email', account.email, { shouldValidate: true });
-    setValue('password', 'Password123', { shouldValidate: true });
+    setValue('password', DEMO_PASSWORD, { shouldValidate: true });
     setAuthError('');
   };
 
   const onSubmit = async (data) => {
     setAuthError('');
-    setSuccessMsg('');
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      const { user } = await login({ email: data.email });
-
-      setSuccessMsg(`Welcome back! Logging in as ${user.role.toUpperCase()}...`);
-
-      const targetPath =
-        fromLocation && fromLocation.startsWith(`/${user.role}`)
-          ? fromLocation
-          : `/${user.role}/dashboard`;
-
-      setTimeout(() => {
-        navigate(targetPath, { replace: true });
-      }, 700);
-    } catch {
-      setAuthError('Invalid credentials. Please verify your email and password.');
+      await login(data);
+    } catch (error) {
+      setAuthError(error.message);
     }
   };
+
+  // Covers a successful login as well as visiting this page while already signed in
+  if (user) {
+    const mayReturn =
+      from && (from.pathname.startsWith(`/${user.role}/`) || from.pathname === '/notifications');
+    return <Navigate to={mayReturn ? from : `/${user.role}/dashboard`} replace />;
+  }
 
   return (
     <div className="py-4 sm:py-8 max-w-5xl mx-auto">
@@ -170,7 +157,7 @@ export default function Login() {
                 <span className="text-[10px] font-mono text-primary font-semibold">SIH Demo</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5">
-                {demoAccounts.map((acc) => (
+                {DEMO_ACCOUNTS.map((acc) => (
                   <button
                     key={acc.role}
                     type="button"
@@ -185,7 +172,7 @@ export default function Login() {
             </div>
 
             {/* Protected Route Notice */}
-            {fromLocation && !successMsg && (
+            {from && !authError && (
               <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium flex items-center gap-2">
                 <svg className="w-4 h-4 text-amber-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
@@ -200,7 +187,7 @@ export default function Login() {
 
             {/* Error & Success Feedback Banners */}
             {authError && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2 animate-in fade-in duration-150">
+              <div role="alert" className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium flex items-center gap-2 animate-in fade-in duration-150">
                 <svg className="w-4 h-4 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
@@ -212,7 +199,7 @@ export default function Login() {
               </div>
             )}
 
-            {successMsg && (
+            {registeredEmail && !authError && (
               <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2 animate-in fade-in duration-150">
                 <svg className="w-4 h-4 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path
@@ -221,7 +208,7 @@ export default function Login() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>{successMsg}</span>
+                <span>Account created. Please sign in.</span>
               </div>
             )}
 
@@ -245,18 +232,6 @@ export default function Login() {
                   {...register('password')}
                   error={errors.password}
                 />
-                <div className="flex justify-end mt-1.5">
-                  <a
-                    href="#forgot"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      alert('Password recovery will be activated via Spring Boot JavaMailSender in Phase B7.');
-                    }}
-                    className="text-xs text-primary hover:underline font-medium"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
               </div>
 
               <div className="pt-2">

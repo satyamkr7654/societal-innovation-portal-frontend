@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { PHOTO_TYPES } from '../../utils/image';
 
 /**
  * PhotoUpload - Drag-and-Drop & Browse Photo Upload Zone
@@ -41,7 +42,7 @@ export default function PhotoUpload({
     if (!selectedFile) return;
 
     // 1. Verify MIME type is image
-    if (!selectedFile.type.startsWith('image/')) {
+    if (!PHOTO_TYPES.includes(selectedFile.type)) {
       setErrorMsg('Please upload a valid image file (JPG, PNG, or WebP).');
       return;
     }
@@ -100,7 +101,7 @@ export default function PhotoUpload({
       <input
         ref={fileInputRef}
         type="file"
-        accept="image/png, image/jpeg, image/webp"
+        accept={PHOTO_TYPES.join(',')}
         onChange={handleInputChange}
         className="hidden"
         id="problem-photo-upload"

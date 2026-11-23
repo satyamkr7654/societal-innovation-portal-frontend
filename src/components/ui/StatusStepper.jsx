@@ -1,5 +1,4 @@
 import React from 'react';
-import { WORKFLOW_STAGES, getStatusConfig } from '../../utils/statusConfig';
 
 /**
  * StatusStepper - 5-Stage Civic Workflow Progression Stepper
@@ -100,27 +99,23 @@ export default function StatusStepper({
 
       {/* Desktop Stepper (Horizontal Track) */}
       <div className="hidden md:block">
-        <div className="relative flex items-center justify-between">
+        <div className="relative flex items-start">
           {/* Connecting Background Line */}
-          <div className="absolute top-5 left-8 right-8 h-1 bg-slate-200 -z-0" />
+          <div className="absolute top-5 left-[10%] right-[10%] h-1 bg-slate-200" />
 
           {/* Active Progress Fill Line */}
           <div
-            className={`absolute top-5 left-8 h-1 -z-0 transition-all duration-500 ${
+            className={`absolute top-5 left-[10%] h-1 transition-all duration-500 ${
               isRejected ? 'bg-red-400' : 'bg-primary-600'
             }`}
             style={{
-              width: isRejected
-                ? '25%'
-                : normStatus === 'SOLVED'
-                ? 'calc(100% - 4rem)'
-                : `${(effectiveIndex / (stages.length - 1)) * 100}%`,
+              width: `${(effectiveIndex / (stages.length - 1)) * 80}%`,
             }}
           />
 
           {/* Stepper Nodes */}
           {stages.map((stage, idx) => {
-            const isCompleted = !isRejected && idx < effectiveIndex;
+            const isCompleted = idx < effectiveIndex;
             const isCurrent = !isRejected && idx === effectiveIndex;
             const isStageRejected = isRejected && idx === 1;
             const dateStr = getStageDate(stage.id);
@@ -128,7 +123,7 @@ export default function StatusStepper({
             return (
               <div
                 key={stage.id}
-                className="flex flex-col items-center text-center relative z-10 w-36"
+                className="flex flex-col items-center text-center relative z-10 flex-1 min-w-0 px-1"
               >
                 {/* Node Circle */}
                 <div
@@ -184,13 +179,13 @@ export default function StatusStepper({
 
                   {/* Current Active Badge */}
                   {isCurrent && !isStageRejected && stage.id !== 'SOLVED' && (
-                    <span className="inline-block mt-1 px-1.5 py-0.2 text-[9px] font-bold uppercase rounded bg-primary-50 text-primary-700 border border-primary-200 animate-pulse">
+                    <span className="inline-block mt-1 px-1.5 py-0.5 text-[9px] font-bold uppercase rounded bg-primary-50 text-primary-700 border border-primary-200 animate-pulse">
                       Active Stage
                     </span>
                   )}
 
                   {isCurrent && stage.id === 'SOLVED' && (
-                    <span className="inline-block mt-1 px-2 py-0.2 text-[9px] font-bold uppercase rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    <span className="inline-block mt-1 px-2 py-0.5 text-[9px] font-bold uppercase rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
                       Completed 🎉
                     </span>
                   )}
@@ -204,7 +199,7 @@ export default function StatusStepper({
       {/* Mobile Stepper (Vertical Flow) */}
       <div className="md:hidden space-y-4">
         {stages.map((stage, idx) => {
-          const isCompleted = !isRejected && idx < effectiveIndex;
+          const isCompleted = idx < effectiveIndex;
           const isCurrent = !isRejected && idx === effectiveIndex;
           const isStageRejected = isRejected && idx === 1;
           const dateStr = getStageDate(stage.id);
@@ -229,11 +224,17 @@ export default function StatusStepper({
                     : isCompleted
                     ? 'bg-primary-900 text-white'
                     : isCurrent
-                    ? 'bg-primary-600 text-white ring-4 ring-primary-100'
+                    ? stage.id === 'SOLVED'
+                      ? 'bg-emerald-600 text-white ring-4 ring-emerald-100'
+                      : 'bg-primary-600 text-white ring-4 ring-primary-100'
                     : 'bg-white border-2 border-slate-300 text-slate-400'
                 }`}
               >
-                {isStageRejected ? '✕' : isCompleted ? '✓' : stage.stepNum}
+                {isStageRejected
+                  ? '✕'
+                  : isCompleted || (isCurrent && stage.id === 'SOLVED')
+                    ? '✓'
+                    : stage.stepNum}
               </div>
 
               {/* Stage Content */}
@@ -261,7 +262,7 @@ export default function StatusStepper({
 
                 {isCurrent && !isStageRejected && (
                   <span className="inline-block mt-1 px-1.5 py-0.5 text-[9px] font-bold uppercase rounded bg-primary-100 text-primary-700">
-                    Current Milestone
+                    {stage.id === 'SOLVED' ? 'Completed' : 'Current Milestone'}
                   </span>
                 )}
               </div>

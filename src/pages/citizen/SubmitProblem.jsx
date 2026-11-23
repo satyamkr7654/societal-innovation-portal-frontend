@@ -6,6 +6,14 @@ import * as z from 'zod';
 
 import { useAuth } from '../../context/AuthContext';
 import { CIVIC_CATEGORIES, createMockProblem } from '../../utils/mockData';
+import {
+  JHARKHAND_DISTRICTS,
+  findDistrict,
+  isInJharkhandArea,
+  isTooFarFromDistrict,
+  nearestDistrict,
+} from '../../utils/jharkhand';
+import { photoToDataUrl } from '../../utils/image';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import FormInput from '../../components/ui/FormInput';
@@ -16,50 +24,50 @@ import Badge from '../../components/ui/Badge';
 /**
  * Zod Schema for Citizen Problem Submission
  */
-const submitProblemSchema = z.object({
-  title: z
-    .string()
-    .min(10, 'Title must be at least 10 characters describing the issue')
-    .max(120, 'Title cannot exceed 120 characters'),
-  description: z
-    .string()
-    .min(25, 'Please provide more details (at least 25 characters) to help nodal teams investigate'),
-  category: z.string().min(1, 'Please select a civic category'),
-  district: z.string().min(2, 'Please select the relevant Jharkhand district'),
-  address: z.string().min(5, 'Street address / landmark is required'),
-  location: z
-    .object(
-      {
-        lat: z.number(),
-        lng: z.number(),
-      },
-      { invalid_type_error: 'Please drop a pin on the map to mark the exact location' }
-    )
-    .nullable()
-    .refine((val) => val !== null && val?.lat !== undefined && val?.lng !== undefined, {
-      message: 'Please select a location on the map',
-    }),
-});
-
-const JHARKHAND_DISTRICTS = [
-  'Ranchi',
-  'Dhanbad',
-  'East Singhbhum (Jamshedpur)',
-  'Bokaro',
-  'Hazaribagh',
-  'Deoghar',
-  'Khunti',
-  'Ramgarh',
-  'Dumka',
-  'West Singhbhum (Chaibasa)',
-  'Giridih',
-  'Palamu',
-];
+const submitProblemSchema = z
+  .object({
+    title: z
+      .string()
+      .trim()
+      .min(10, 'Title must be at least 10 characters describing the issue')
+      .max(120, 'Title cannot exceed 120 characters'),
+    description: z
+      .string()
+      .trim()
+      .min(25, 'Please provide more details (at least 25 characters)')
+      .max(2000, 'Description cannot exceed 2000 characters'),
+    category: z.enum(
+      CIVIC_CATEGORIES.map((c) => c.id),
+      { error: 'Please select a civic category' }
+    ),
+    district: z
+      .string()
+      .refine((name) => Boolean(findDistrict(name)), 'Please select a Jharkhand district'),
+    address: z
+      .string()
+      .trim()
+      .min(5, 'Street address / landmark is required')
+      .max(200, 'Address cannot exceed 200 characters'),
+    location: z
+      .object({ lat: z.number(), lng: z.number() })
+      .nullable()
+      .refine((point) => point !== null, {
+        message: 'Please select a location on the map',
+        abort: true,
+      })
+      .refine((point) => point === null || isInJharkhandArea(point), {
+        message: 'The pin is outside the Jharkhand area',
+      }),
+  })
+  .refine((data) => !isTooFarFromDistrict(data.location, data.district), {
+    message: 'The pin is too far from the selected district',
+    path: ['location'],
+  });
 
 export default function SubmitProblem() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [successToast, setSuccessToast] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
   const {
@@ -83,48 +91,28 @@ export default function SubmitProblem() {
   });
 
   const selectedCategory = watch('category');
+  const selectedDistrict = watch('district');
+  const pin = watch('location');
+  const closest = pin ? nearestDistrict(pin) : null;
 
   const onSubmit = async (data) => {
-    setSuccessToast('');
-
+    setSubmitError('');
     try {
-      // Simulate submission network latency (800ms)
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // Generate preview URL if user attached an actual image file
-      const photoUrl = selectedPhoto
-        ? URL.createObjectURL(selectedPhoto)
-        : 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80';
-
-      // Persist into mock data layer
-      const created = createMockProblem({
-        title: data.title,
-        description: data.description,
-        category: data.category,
-        district: data.district,
-        location: {
-          address: data.address,
-          lat: data.location.lat,
-          lng: data.location.lng,
+      const photoUrl = selectedPhoto ? await photoToDataUrl(selectedPhoto) : null;
+      const created = createMockProblem(
+        {
+          title: data.title,
+          description: data.description,
+          category: data.category,
+          district: data.district,
+          location: { address: data.address, ...data.location },
+          photoUrl,
         },
-        citizen: {
-          id: user?.id || 'usr_cit_01',
-          name: user?.name || 'Citizen Ramesh',
-          phone: user?.phone || '9835123450',
-        },
-        photoUrl,
-      });
-
-      setSuccessToast(
-        `Problem lodged successfully! Tracking Case ID: ${created.id}. Redirecting to your problems...`
+        user
       );
-
-      // Redirect to My Problems list
-      setTimeout(() => {
-        navigate('/citizen/problems');
-      }, 1200);
-    } catch {
-      // Handled in Phase F8 with Axios catch
+      navigate('/citizen/problems', { state: { createdId: created.id } });
+    } catch (error) {
+      setSubmitError(error.message);
     }
   };
 
@@ -144,20 +132,6 @@ export default function SubmitProblem() {
           SIH26043 Form
         </Badge>
       </div>
-
-      {/* Success Notification Banner */}
-      {successToast && (
-        <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2.5 animate-in fade-in duration-200">
-          <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <span>{successToast}</span>
-        </div>
-      )}
 
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
@@ -270,8 +244,8 @@ export default function SubmitProblem() {
                 {...register('district')}
               >
                 {JHARKHAND_DISTRICTS.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
+                  <option key={d.name} value={d.name}>
+                    {d.name}
                   </option>
                 ))}
               </select>
@@ -304,11 +278,19 @@ export default function SubmitProblem() {
               render={({ field }) => (
                 <LocationPicker
                   value={field.value}
+                  focus={findDistrict(selectedDistrict)}
                   onChange={(coords) => field.onChange(coords)}
                   height="300px"
                 />
               )}
             />
+
+            {closest && !errors.location && closest.name !== selectedDistrict && (
+              <p className="text-xs text-amber-700 font-medium pt-1">
+                This pin is closer to {closest.name} headquarters. Please check that{' '}
+                {selectedDistrict} is correct.
+              </p>
+            )}
 
             {errors.location && (
               <p className="flex items-center gap-1.5 text-xs text-red-600 font-semibold pt-1">
@@ -323,6 +305,15 @@ export default function SubmitProblem() {
               </p>
             )}
           </div>
+
+          {submitError && (
+            <div
+              role="alert"
+              className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"
+            >
+              {submitError}
+            </div>
+          )}
 
           {/* Form Actions */}
           <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">

@@ -1,15 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
-import { getMockProblems, CIVIC_CATEGORIES } from '../../utils/mockData';
+import { getMockProblems, isProblemOwner, CIVIC_CATEGORIES } from '../../utils/mockData';
 import { WORKFLOW_STAGES, getStatusConfig } from '../../utils/statusConfig';
 import { useAuth } from '../../context/AuthContext';
 
 export default function MyProblems() {
   const { user } = useAuth();
-  const [problems] = useState(() => getMockProblems());
+  const createdId = useLocation().state?.createdId;
+  const [allProblems] = useState(getMockProblems);
 
   // Filter & Search states
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,7 +18,19 @@ export default function MyProblems() {
   const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [selectedDistrict, setSelectedDistrict] = useState('ALL');
   const [sortBy, setSortBy] = useState('newest');
-  const [scope, setScope] = useState('all'); // 'all' or 'mine'
+  const [scope, setScope] = useState('mine'); // 'mine' or 'all'
+
+  // Everything below (counts, districts, results) follows the selected scope
+  const myProblems = useMemo(
+    () => allProblems.filter((p) => isProblemOwner(p, user)),
+    [allProblems, user]
+  );
+  const problems = scope === 'mine' ? myProblems : allProblems;
+
+  const changeScope = (next) => {
+    setScope(next);
+    setSelectedDistrict('ALL'); // the district list differs per scope
+  };
 
   // Extract unique districts from problems
   const districts = useMemo(() => {
@@ -49,14 +62,6 @@ export default function MyProblems() {
   const filteredProblems = useMemo(() => {
     return problems
       .filter((p) => {
-        // Scope filter
-        if (scope === 'mine' && user?.name) {
-          const isOwner =
-            p.citizen?.name?.toLowerCase().includes(user.name.toLowerCase()) ||
-            p.citizen?.phone === user.phone;
-          if (!isOwner) return false;
-        }
-
         // Status filter
         if (selectedStatus !== 'ALL') {
           const norm = String(p.status).toUpperCase().replace(/[\s-]+/g, '_');
@@ -101,14 +106,13 @@ export default function MyProblems() {
         }
         return 0;
       });
-  }, [problems, scope, user, selectedStatus, selectedCategory, selectedDistrict, searchQuery, sortBy]);
+  }, [problems, selectedStatus, selectedCategory, selectedDistrict, searchQuery, sortBy]);
 
   const hasActiveFilters =
     searchQuery.trim() !== '' ||
     selectedStatus !== 'ALL' ||
     selectedCategory !== 'ALL' ||
-    selectedDistrict !== 'ALL' ||
-    scope !== 'all';
+    selectedDistrict !== 'ALL';
 
   const resetFilters = () => {
     setSearchQuery('');
@@ -116,7 +120,6 @@ export default function MyProblems() {
     setSelectedCategory('ALL');
     setSelectedDistrict('ALL');
     setSortBy('newest');
-    setScope('all');
   };
 
   return (
@@ -144,6 +147,15 @@ export default function MyProblems() {
           </Link>
         </div>
       </div>
+
+      {createdId && (
+        <div
+          role="status"
+          className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium"
+        >
+          Problem submitted successfully. Your Case ID is <strong>{createdId}</strong>.
+        </div>
+      )}
 
       {/* Summary KPI Cards (Clickable Filter Triggers) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -220,25 +232,25 @@ export default function MyProblems() {
           <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-lg border border-slate-200 shrink-0 self-start sm:self-auto">
             <button
               type="button"
-              onClick={() => setScope('all')}
+              onClick={() => changeScope('all')}
               className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${
                 scope === 'all'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              All Portal Reports ({problems.length})
+              All Portal Reports ({allProblems.length})
             </button>
             <button
               type="button"
-              onClick={() => setScope('mine')}
+              onClick={() => changeScope('mine')}
               className={`px-3 py-1.5 rounded-md text-xs font-semibold transition ${
                 scope === 'mine'
                   ? 'bg-white text-slate-900 shadow-xs'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              My Submissions Only
+              My Submissions ({myProblems.length})
             </button>
           </div>
 
@@ -306,7 +318,7 @@ export default function MyProblems() {
         </div>
 
         {/* Row 3: Status Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 border-t border-slate-100 scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-1 border-t border-slate-100">
           <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
             Status:
           </span>
@@ -326,7 +338,7 @@ export default function MyProblems() {
               >
                 <span>{st === 'ALL' ? 'All' : st.replace('_', ' ')}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
                     isSelected ? 'bg-primary-800 text-white' : 'bg-slate-200 text-slate-700'
                   }`}
                 >
@@ -353,7 +365,6 @@ export default function MyProblems() {
       {filteredProblems.length > 0 ? (
         <div className="space-y-4">
           {filteredProblems.map((problem) => {
-            const statusMeta = getStatusConfig(problem.status);
             const latestHistory = problem.statusHistory?.[problem.statusHistory.length - 1];
             const categoryMeta = CIVIC_CATEGORIES.find((c) => c.id === problem.category);
 
@@ -500,7 +511,11 @@ export default function MyProblems() {
                       to={`/citizen/problems/${problem.id}#feedback`}
                       className="text-emerald-900 font-bold hover:underline"
                     >
-                      {problem.feedback ? 'Feedback Submitted ★' : 'Submit Citizen Feedback →'}
+                      {problem.feedback
+                        ? 'Feedback Submitted ★'
+                        : isProblemOwner(problem, user)
+                          ? 'Submit Citizen Feedback →'
+                          : 'View Details →'}
                     </Link>
                   </div>
                 )}

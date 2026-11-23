@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 
+import { useAuth } from '../../context/AuthContext';
 import Button from '../../components/ui/Button';
 import FormInput from '../../components/ui/FormInput';
 import Badge from '../../components/ui/Badge';
@@ -13,8 +14,8 @@ import Badge from '../../components/ui/Badge';
  */
 const getRegisterSchema = (role) => {
   const baseSchema = {
-    name: z.string().min(2, 'Full name must be at least 2 characters'),
-    email: z.string().email('Please provide a valid email address'),
+    name: z.string().trim().min(2, 'Full name must be at least 2 characters'),
+    email: z.string().trim().email('Please provide a valid email address'),
     password: z
       .string()
       .min(8, 'Password must be at least 8 characters')
@@ -29,10 +30,12 @@ const getRegisterSchema = (role) => {
   } else if (role === 'university') {
     baseSchema.institutionName = z
       .string()
+      .trim()
       .min(3, 'Institution name must be at least 3 characters (e.g. BIT Mesra)');
   } else if (role === 'industry') {
     baseSchema.companyName = z
       .string()
+      .trim()
       .min(2, 'Company/Organization name must be at least 2 characters (e.g. Tata Steel CSR)');
   }
 
@@ -46,7 +49,8 @@ const getRegisterSchema = (role) => {
 
 export default function Register() {
   const [selectedRole, setSelectedRole] = useState('citizen');
-  const [successMessage, setSuccessMessage] = useState('');
+  const [formError, setFormError] = useState('');
+  const { user, register: createAccount } = useAuth();
   const navigate = useNavigate();
 
   const roleOptions = [
@@ -69,26 +73,28 @@ export default function Register() {
 
   const handleRoleChange = (roleId) => {
     setSelectedRole(roleId);
-    setSuccessMessage('');
+    setFormError('');
     reset();
   };
 
   const onSubmit = async (data) => {
-    setSuccessMessage('');
+    setFormError('');
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      setSuccessMessage(
-        `Account created for ${data.name} as ${selectedRole.toUpperCase()}! Redirecting to Sign In...`
-      );
-
-      setTimeout(() => {
-        navigate('/login');
-      }, 1200);
-    } catch {
-      // Swapped with Axios in Phase F8
+      const account = await createAccount({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        role: selectedRole,
+        phone: data.phone,
+        organizationName: data.institutionName || data.companyName,
+      });
+      navigate('/login', { state: { registeredEmail: account.email } });
+    } catch (error) {
+      setFormError(error.message);
     }
   };
+
+  if (user) return <Navigate to={`/${user.role}/dashboard`} replace />;
 
   return (
     <div className="py-4 sm:py-8 max-w-5xl mx-auto">
@@ -174,17 +180,12 @@ export default function Register() {
               </p>
             </div>
 
-            {/* Success Banner */}
-            {successMessage && (
-              <div className="p-3.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center gap-2.5 animate-in fade-in duration-200">
-                <svg className="w-5 h-5 text-emerald-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-                <span>{successMessage}</span>
+            {formError && (
+              <div
+                role="alert"
+                className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-medium"
+              >
+                {formError}
               </div>
             )}
 
@@ -245,7 +246,7 @@ export default function Register() {
                   type="tel"
                   placeholder="10-digit mobile (e.g. 9876543210)"
                   required
-                  helperText="Required for OTP & problem status SMS alerts"
+                  helperText="Used only to contact you about your reports"
                   {...register('phone')}
                   error={errors.phone}
                 />

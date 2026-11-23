@@ -22,11 +22,21 @@ export default {
       },
       colors: {
         primary: {
+          50: '#f0f5fb',
+          100: '#dce8f5',
+          200: '#b9d0ea',
+          500: '#3f6ea8',
+          600: '#2c578c',
+          700: '#234670',
+          800: '#1d3557',
+          900: '#0f2744',
           DEFAULT: '#0f2744', // Deep Navy Blue (Formal, trustworthy govt tone)
           light: '#1d3557',
           dark: '#0a192f',
         },
         accent: {
+          700: '#b45309',
+          800: '#92400e',
           DEFAULT: '#d97706', // Saffron / Amber (Used sparingly for highlights & CTAs)
           light: '#f59e0b',
           dark: '#b45309',
@@ -73,7 +83,13 @@ export default {
         xl: '1rem',      // 16px - prominent containers
         full: '9999px',  // rounded pills
       },
+      borderWidth: { 3: '3px' },
+      backdropBlur: { xs: '2px' },
+      keyframes: { in: { from: { opacity: '0' }, to: { opacity: '1' } } },
+      animation: { in: 'in 0.2s ease-out' },
       boxShadow: {
+        '2xs': '0 1px 1px 0 rgba(15, 39, 68, 0.04)',
+        xs: '0 1px 2px 0 rgba(15, 39, 68, 0.04)',
         sm: '0 1px 2px 0 rgba(15, 39, 68, 0.05)',
         md: '0 4px 6px -1px rgba(15, 39, 68, 0.08), 0 2px 4px -2px rgba(15, 39, 68, 0.05)',
         lg: '0 10px 15px -3px rgba(15, 39, 68, 0.1), 0 4px 6px -4px rgba(15, 39, 68, 0.05)',

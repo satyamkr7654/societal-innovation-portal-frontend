@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { getMockProblems, isProblemOwner } from '../../utils/mockData';
 
 export default function CitizenDashboard() {
+  const { user } = useAuth();
+  const [myProblems] = useState(() =>
+    getMockProblems()
+      .filter((p) => isProblemOwner(p, user))
+      .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+  );
+  const countBy = (...statuses) =>
+    myProblems.filter((p) => statuses.includes(p.status)).length;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -29,7 +40,7 @@ export default function CitizenDashboard() {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
               Total Reported
             </span>
-            <div className="text-3xl font-heading font-black text-primary">3</div>
+            <div className="text-3xl font-heading font-black text-primary">{myProblems.length}</div>
             <p className="text-xs text-slate-500">Civic issues lodged by you</p>
           </div>
         </Card>
@@ -38,7 +49,9 @@ export default function CitizenDashboard() {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
               In Progress
             </span>
-            <div className="text-3xl font-heading font-black text-amber-600">2</div>
+            <div className="text-3xl font-heading font-black text-amber-600">
+              {countBy('ASSIGNED', 'IN_PROGRESS')}
+            </div>
             <p className="text-xs text-slate-500">Assigned to university R&D</p>
           </div>
         </Card>
@@ -47,8 +60,8 @@ export default function CitizenDashboard() {
             <span className="text-xs font-bold text-slate-400 uppercase tracking-wider font-mono">
               Resolved & Closed
             </span>
-            <div className="text-3xl font-heading font-black text-emerald-600">1</div>
-            <p className="text-xs text-slate-500">Verified by municipal admin</p>
+            <div className="text-3xl font-heading font-black text-emerald-600">{countBy('SOLVED')}</div>
+            <p className="text-xs text-slate-500">Solved problems</p>
           </div>
         </Card>
       </div>
@@ -57,17 +70,42 @@ export default function CitizenDashboard() {
         header={
           <div className="flex items-center justify-between">
             <h3 className="font-heading font-bold text-slate-800 text-sm">
-              Citizen Module Roadmap
+              Recent Reports
             </h3>
-            <Badge status="progress" size="sm">
-              Phase F3 Target
-            </Badge>
+            <Link
+              to="/citizen/problems"
+              className="text-xs font-semibold text-primary hover:underline"
+            >
+              View all
+            </Link>
           </div>
         }
       >
-        <p className="text-xs text-slate-600 leading-relaxed font-sans">
-          In <strong>Phase F3</strong>, this dashboard will feature interactive problem tracking cards, category-wise breakdowns (Water, Roads, Sanitation, Electricity, Health), and live status alerts.
-        </p>
+        {myProblems.length === 0 ? (
+          <p className="text-sm text-slate-600">
+            You have not reported any problems yet. Use &quot;Report New Problem&quot; to
+            submit your first one.
+          </p>
+        ) : (
+          <ul className="divide-y divide-slate-100">
+            {myProblems.slice(0, 5).map((p) => (
+              <li
+                key={p.id}
+                className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-3"
+              >
+                <Link
+                  to={`/citizen/problems/${p.id}`}
+                  className="min-w-0 truncate text-sm font-medium text-slate-800 hover:text-primary hover:underline"
+                >
+                  {p.title}
+                </Link>
+                <span className="shrink-0">
+                  <Badge status={p.status} size="sm" />
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </Card>
     </div>
   );

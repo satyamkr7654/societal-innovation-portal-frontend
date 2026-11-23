@@ -62,19 +62,9 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2 text-xs text-slate-600">
               <li>
-                <Link to="/design-system" className="hover:text-primary transition">
-                  Design System Tokens
-                </Link>
-              </li>
-              <li>
-                <a href="#how-it-works" className="hover:text-primary transition">
+                <Link to="/#how-it-works" className="hover:text-primary transition">
                   Workflow Guidelines
-                </a>
-              </li>
-              <li>
-                <a href="#privacy" className="hover:text-primary transition">
-                  Privacy Policy & Data Security
-                </a>
+                </Link>
               </li>
               <li>
                 <span className="text-slate-400">Toll Free: 1800-JH-CIVIC</span>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Sidebar from './Sidebar';
 
@@ -8,35 +8,9 @@ import Sidebar from './Sidebar';
  * Connected directly to central AuthContext: uses user.role automatically.
  */
 export default function DashboardLayout() {
-  const { user, role: authRole, logout, isAuthenticated } = useAuth();
-  const [activeRole, setActiveRole] = useState(authRole || 'citizen');
+  const { user, role, logout } = useAuth();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const handleRoleSwitch = (newRole) => {
-    setActiveRole(newRole);
-    navigate(`/${newRole}/dashboard`);
-  };
-
-  // Keep activeRole in sync with authRole or current URL prefix
-  useEffect(() => {
-    if (authRole) {
-      setActiveRole(authRole);
-      return;
-    }
-
-    const path = location.pathname;
-    if (path.startsWith('/admin')) {
-      setActiveRole('admin');
-    } else if (path.startsWith('/university')) {
-      setActiveRole('university');
-    } else if (path.startsWith('/industry')) {
-      setActiveRole('industry');
-    } else if (path.startsWith('/citizen')) {
-      setActiveRole('citizen');
-    }
-  }, [authRole, location.pathname]);
 
   // Page titles based on route
   const getPageTitle = (pathname) => {
@@ -54,16 +28,11 @@ export default function DashboardLayout() {
     return 'Portal';
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
     <div className="min-h-screen bg-slate-100 font-sans antialiased text-slate-800 flex overflow-x-hidden">
       {/* Role-Aware Sidebar */}
       <Sidebar
-        role={activeRole}
+        role={role}
         isOpen={isMobileSidebarOpen}
         onClose={() => setIsMobileSidebarOpen(false)}
       />
@@ -95,25 +64,8 @@ export default function DashboardLayout() {
             </div>
           </div>
 
-          {/* Right: Role Switcher / Logged-in profile + Bell + Avatar + Logout */}
+          {/* Right: Bell + Avatar + Logout */}
           <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            {/* Quick Role Override Dropdown (for development/testing preview) */}
-            <div className="flex items-center gap-1 bg-slate-100 px-2 sm:px-2.5 py-1 rounded-md border border-slate-200">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 hidden md:inline">
-                Role:
-              </span>
-              <select
-                value={activeRole}
-                onChange={(e) => handleRoleSwitch(e.target.value)}
-                className="bg-transparent text-[11px] sm:text-xs font-semibold text-primary focus:outline-none cursor-pointer"
-              >
-                <option value="citizen">Citizen</option>
-                <option value="admin">Admin</option>
-                <option value="university">University</option>
-                <option value="industry">Industry</option>
-              </select>
-            </div>
-
             {/* Notification Bell */}
             <Link
               to="/notifications"
@@ -135,28 +87,26 @@ export default function DashboardLayout() {
                 <div className="text-xs font-bold text-slate-800 leading-tight truncate max-w-[120px]">
                   {user?.name || 'Demo User'}
                 </div>
-                <div className="text-[10px] text-slate-500 capitalize">{activeRole}</div>
+                <div className="text-[10px] text-slate-500 capitalize">{role}</div>
               </div>
             </div>
 
             {/* Logout Button */}
-            {isAuthenticated && (
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
-                title="Sign Out"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  />
-                </svg>
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={logout}
+              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
+              title="Sign Out"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+            </button>
           </div>
         </header>
 

@@ -1,75 +1,74 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Card from '../../components/ui/Card';
 import Badge from '../../components/ui/Badge';
 import Button from '../../components/ui/Button';
 import LocationPicker from '../../components/ui/LocationPicker';
 import StatusStepper from '../../components/ui/StatusStepper';
-import { getProblemById, saveProblemFeedback, CIVIC_CATEGORIES } from '../../utils/mockData';
+import { useAuth } from '../../context/AuthContext';
+import {
+  getProblemById,
+  isProblemOwner,
+  saveProblemFeedback,
+  CIVIC_CATEGORIES,
+} from '../../utils/mockData';
 import { getStatusConfig } from '../../utils/statusConfig';
 
 export default function ProblemDetail() {
   const { id } = useParams();
-  const [problem, setProblem] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // The key resets the form and dialog state when the URL points to another problem
+  return <ProblemDossier key={id} id={id} />;
+}
+
+function ProblemDossier({ id }) {
+  const { user } = useAuth();
+  const [problem, setProblem] = useState(() => getProblemById(id));
 
   // Feedback form state for SOLVED problems
-  const [rating, setRating] = useState(5);
+  const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [feedbackRemarks, setFeedbackRemarks] = useState('');
-  const [isVerifiedOnGround, setIsVerifiedOnGround] = useState(true);
-  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+  const [isVerifiedOnGround, setIsVerifiedOnGround] = useState(false);
+  const [feedbackError, setFeedbackError] = useState('');
   const [feedbackSuccessMsg, setFeedbackSuccessMsg] = useState('');
 
   // Image modal preview state
   const [showImageModal, setShowImageModal] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
 
-  useEffect(() => {
-    setIsLoading(true);
-    // Fetch problem record by route param ID
-    const found = getProblemById(id);
-    setProblem(found || null);
-    setIsLoading(false);
-  }, [id]);
-
-  const handleCopyId = () => {
-    if (problem?.id) {
-      navigator.clipboard.writeText(problem.id);
+  const handleCopyId = async () => {
+    try {
+      await navigator.clipboard.writeText(problem.id);
       setCopiedId(true);
       setTimeout(() => setCopiedId(false), 2000);
+    } catch {
+      // Clipboard blocked: the ID is still visible on the page
     }
   };
 
   const handleFeedbackSubmit = (e) => {
     e.preventDefault();
-    if (!problem) return;
-
-    setIsSubmittingFeedback(true);
-    const feedbackPayload = {
-      rating,
-      remarks: feedbackRemarks.trim() || 'Citizen confirmed resolution quality.',
-      verifiedOnGround: isVerifiedOnGround,
-      citizenName: problem.citizen?.name || 'Citizen',
-    };
-
-    const updated = saveProblemFeedback(problem.id, feedbackPayload);
-    setTimeout(() => {
+    setFeedbackError('');
+    if (rating === 0) {
+      setFeedbackError('Please choose a star rating.');
+      return;
+    }
+    try {
+      const updated = saveProblemFeedback(
+        problem.id,
+        {
+          rating,
+          remarks: feedbackRemarks.trim() || null,
+          verifiedOnGround: isVerifiedOnGround,
+        },
+        user
+      );
       setProblem(updated);
-      setIsSubmittingFeedback(false);
-      setFeedbackSuccessMsg('Thank you! Your resolution satisfaction feedback has been recorded.');
-      setTimeout(() => setFeedbackSuccessMsg(''), 5000);
-    }, 400);
+      setFeedbackSuccessMsg('Thank you! Your feedback has been recorded.');
+    } catch (error) {
+      setFeedbackError(error.message);
+    }
   };
-
-  if (isLoading) {
-    return (
-      <div className="py-20 text-center space-y-3">
-        <div className="w-10 h-10 border-3 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto" />
-        <p className="text-sm font-medium text-slate-500">Loading problem dossier...</p>
-      </div>
-    );
-  }
 
   if (!problem) {
     return (
@@ -93,7 +92,7 @@ export default function ProblemDetail() {
   }
 
   const categoryMeta = CIVIC_CATEGORIES.find((c) => c.id === problem.category);
-  const statusMeta = getStatusConfig(problem.status);
+  const isOwner = isProblemOwner(problem, user);
   const isSolved = problem.status === 'SOLVED';
   const hasFeedback = Boolean(problem.feedback);
 
@@ -157,7 +156,7 @@ export default function ProblemDetail() {
             </div>
             <div>
               Citizen Reporter:{' '}
-              <strong className="text-slate-800">{problem.citizen?.name || 'Verified Citizen'}</strong>
+              <strong className="text-slate-800">{problem.citizen?.name || 'Citizen'}</strong>
             </div>
           </div>
         </div>
@@ -224,7 +223,7 @@ export default function ProblemDetail() {
                       </div>
                     </div>
                     <p className="text-[11px] text-slate-500 italic">
-                      Uploaded by citizen during grievance lodgement. Verified by AI-free manual nodal inspection.
+                      Uploaded by the citizen with this report.
                     </p>
                   </div>
                 ) : (
@@ -297,6 +296,7 @@ export default function ProblemDetail() {
           {(isSolved || hasFeedback) && (
             <Card
               id="feedback"
+              className="scroll-mt-20"
               header={
                 <div className="flex items-center justify-between">
                   <h3 className="font-heading font-bold text-sm text-slate-900 flex items-center gap-2">
@@ -344,14 +344,27 @@ export default function ProblemDetail() {
                     </span>
                   </div>
 
-                  <p className="text-xs sm:text-sm text-slate-700 italic bg-white p-3 rounded-lg border border-emerald-100">
-                    "{problem.feedback.remarks || problem.feedback.comment}"
-                  </p>
+                  {(problem.feedback.remarks || problem.feedback.comment) && (
+                    <p className="text-xs sm:text-sm text-slate-700 italic bg-white p-3 rounded-lg border border-emerald-100">
+                      &quot;{problem.feedback.remarks || problem.feedback.comment}&quot;
+                    </p>
+                  )}
 
-                  <div className="text-xs text-emerald-800 font-medium flex items-center gap-1.5">
-                    <span>✅</span> Citizen verified that the solution is functioning on-ground.
-                  </div>
+                  {problem.feedback.verifiedOnGround === true && (
+                    <div className="text-xs text-emerald-800 font-medium">
+                      ✅ The citizen confirmed inspecting the site.
+                    </div>
+                  )}
+                  {problem.feedback.verifiedOnGround === false && (
+                    <div className="text-xs text-slate-600 font-medium">
+                      The citizen did not confirm an on-site inspection.
+                    </div>
+                  )}
                 </div>
+              ) : !isOwner ? (
+                <p className="text-xs text-slate-600">
+                  Only the citizen who reported this problem can submit feedback.
+                </p>
               ) : (
                 /* Interactive Feedback Form */
                 <form onSubmit={handleFeedbackSubmit} className="space-y-4">
@@ -369,10 +382,12 @@ export default function ProblemDetail() {
                         <button
                           key={star}
                           type="button"
+                          aria-label={`${star} star${star > 1 ? 's' : ''}`}
+                          aria-pressed={rating === star}
                           onMouseEnter={() => setHoverRating(star)}
                           onMouseLeave={() => setHoverRating(0)}
                           onClick={() => setRating(star)}
-                          className="p-1 text-2xl transition hover:scale-110 focus:outline-none"
+                          className="p-1 text-2xl transition hover:scale-110 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
                         >
                           <span
                             className={
@@ -386,7 +401,9 @@ export default function ProblemDetail() {
                         </button>
                       ))}
                       <span className="text-xs font-bold text-slate-700 ml-2">
-                        {rating === 5
+                        {rating === 0
+                          ? 'Select a rating'
+                          : rating === 5
                           ? '5 - Excellent resolution'
                           : rating === 4
                           ? '4 - Good quality'
@@ -426,14 +443,19 @@ export default function ProblemDetail() {
                     </span>
                   </label>
 
+                  {feedbackError && (
+                    <p role="alert" className="text-xs text-red-600 font-medium">
+                      {feedbackError}
+                    </p>
+                  )}
+
                   <Button
                     type="submit"
                     variant="primary"
                     size="sm"
-                    disabled={isSubmittingFeedback}
                     className="shadow-sm"
                   >
-                    {isSubmittingFeedback ? 'Recording Feedback...' : 'Submit Citizen Feedback'}
+                    Submit Citizen Feedback
                   </Button>
                 </form>
               )}
@@ -459,7 +481,7 @@ export default function ProblemDetail() {
           >
             {/* Interactive Leaflet Map in ReadOnly Mode */}
             <LocationPicker
-              value={problem.location || { lat: 23.3441, lng: 85.3096 }}
+              value={problem.location || null}
               readOnly={true}
               height="240px"
             />
@@ -603,12 +625,8 @@ export default function ProblemDetail() {
               <div className="flex items-center justify-between text-slate-600">
                 <span>Mobile Contact:</span>
                 <span className="font-mono text-slate-700">
-                  {problem.citizen?.phone ? `+91 ${problem.citizen.phone.slice(0, 5)}*****` : 'Confidential'}
+                  {isOwner && user.phone ? `+91 ${user.phone}` : 'Confidential'}
                 </span>
-              </div>
-              <div className="flex items-center justify-between text-slate-600">
-                <span>Identity Status:</span>
-                <span className="text-emerald-700 font-semibold">✓ Verified Citizen</span>
               </div>
             </div>
           </Card>

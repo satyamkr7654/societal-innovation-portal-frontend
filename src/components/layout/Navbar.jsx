@@ -11,8 +11,6 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Home', path: '/' },
     { label: 'How It Works', path: '/#how-it-works' },
-    { label: 'Public Problems', path: '/#problems' },
-    { label: 'Design Tokens', path: '/design-system' },
   ];
 
   const handleLogout = () => {

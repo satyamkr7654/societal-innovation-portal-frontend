@@ -3,7 +3,7 @@ import Spinner from './Spinner';
 
 /**
  * Button - Standard civic-tech interactive button
- * @param {'primary' | 'secondary' | 'outline' | 'danger'} variant - Visual appearance
+ * @param {'primary' | 'accent' | 'secondary' | 'outline' | 'danger'} variant - Visual appearance
  * @param {'sm' | 'md' | 'lg'} size - Button scale
  * @param {boolean} isLoading - Loading state with spinner
  * @param {boolean} disabled - Inactive state
@@ -26,6 +26,8 @@ export default function Button({
   const variantMap = {
     primary:
       'bg-primary hover:bg-primary-light text-white shadow-sm focus:ring-primary/50 active:bg-primary-dark',
+    accent:
+      'bg-accent-700 hover:bg-accent-800 text-white shadow-sm focus:ring-accent/50',
     secondary:
       'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 focus:ring-slate-300 active:bg-slate-300',
     outline:
