@@ -11,6 +11,7 @@ import {
   findDistrict,
   nearestDistrict,
 } from '../../utils/jharkhand';
+import SimilarProblems from '../../components/citizen/SimilarProblems';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import FormInput from '../../components/ui/FormInput';
@@ -269,6 +270,8 @@ export default function SubmitProblem() {
               </p>
             )}
           </div>
+
+          <SimilarProblems category={selectedCategory} location={pin} />
 
           {submitError && (
             <div

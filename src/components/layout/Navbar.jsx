@@ -11,6 +11,7 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Home', path: '/' },
     { label: 'How It Works', path: '/#how-it-works' },
+    { label: 'Public Problems', path: '/problems' },
   ];
 
   const handleLogout = async () => {
@@ -49,12 +50,13 @@ export default function Navbar() {
           <nav className="hidden md:flex items-center gap-1 lg:gap-2 shrink-0">
             {navLinks.map((link) => (
               <NavLink
+                end
                 key={link.label}
                 to={link.path}
                 className={({ isActive }) => `
                   px-3 py-2 rounded text-xs font-semibold tracking-wide transition duration-150
                   ${
-                    isActive && link.path === '/'
+                    isActive && !link.path.includes('#')
                       ? 'text-primary bg-slate-100/80 font-bold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                   }

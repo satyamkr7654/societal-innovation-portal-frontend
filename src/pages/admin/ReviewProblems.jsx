@@ -8,14 +8,16 @@ import { listProblems } from '../../services/problemService';
 import { DEFAULT_FILTERS, countByStatus, filterProblems } from '../../utils/problems';
 
 const NO_PROBLEMS = [];
-const TAB_LABELS = { ALL: 'All', DECISION: 'Project decisions' };
+const TAB_LABELS = { ALL: 'All', DECISION: 'Project decisions', OVERDUE: 'Overdue' };
+// Lists that are not a single status
+const SPECIAL = { DECISION: (p) => p.pendingDecision, OVERDUE: (p) => p.overdue };
 
 export default function ReviewProblems() {
   const { data, error, isLoading, reload } = useAsync(listProblems);
   // Kept in the URL, so returning from a problem restores the same list
   const [params, setParams] = useSearchParams();
   const requested = params.get('status');
-  const status = ['ALL', 'DECISION', ...ALL_STATUSES].includes(requested)
+  const status = ['ALL', 'DECISION', 'OVERDUE', ...ALL_STATUSES].includes(requested)
     ? requested
     : 'SUBMITTED';
   const search = params.get('q') || '';
@@ -24,22 +26,20 @@ export default function ReviewProblems() {
   const counts = useMemo(
     () => ({
       ...countByStatus(problems),
-      DECISION: problems.filter((p) => p.pendingDecision).length,
+      DECISION: problems.filter(SPECIAL.DECISION).length,
+      OVERDUE: problems.filter(SPECIAL.OVERDUE).length,
     }),
     [problems]
   );
   // Oldest first, so nobody is kept waiting by newer reports
   const shown = useMemo(
     () =>
-      filterProblems(
-        status === 'DECISION' ? problems.filter((p) => p.pendingDecision) : problems,
-        {
-          ...DEFAULT_FILTERS,
-          status: status === 'DECISION' ? 'ALL' : status,
-          search,
-          sort: 'oldest',
-        }
-      ),
+      filterProblems(SPECIAL[status] ? problems.filter(SPECIAL[status]) : problems, {
+        ...DEFAULT_FILTERS,
+        status: SPECIAL[status] ? 'ALL' : status,
+        search,
+        sort: 'oldest',
+      }),
     [problems, status, search]
   );
 
@@ -70,7 +70,7 @@ export default function ReviewProblems() {
           className="w-full px-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
         />
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {['DECISION', ...ALL_STATUSES, 'ALL'].map((key) => (
+          {['DECISION', 'OVERDUE', ...ALL_STATUSES, 'ALL'].map((key) => (
             <button
               key={key}
               type="button"
@@ -105,6 +105,11 @@ export default function ReviewProblems() {
                     {p.title}
                   </span>
                   <span className="block text-xs text-slate-500 mt-0.5">
+                    {p.overdue && (
+                      <strong className="text-red-700">
+                        ⚠ Overdue: {p.daysInStage} days in this stage •{' '}
+                      </strong>
+                    )}
                     {p.pendingDecision && (
                       <strong className="text-accent-700">
                         {p.pendingDecision === 'PROPOSAL'

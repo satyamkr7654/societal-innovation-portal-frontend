@@ -140,6 +140,8 @@ describe('AdminDashboard', () => {
       pendingAccounts: 0,
       proposalsToReview: 0,
       completionsToConfirm: 0,
+      overdue: 0,
+      monthly: [{ month: '2026-01', reported: 0, solved: 0 }],
     });
     render(
       <MemoryRouter>
@@ -147,6 +149,6 @@ describe('AdminDashboard', () => {
       </MemoryRouter>
     );
     expect(await screen.findByText('None solved yet')).toBeTruthy();
-    expect(screen.getAllByText('No problems reported yet.')).toHaveLength(2);
+    expect(screen.getAllByText('No problems reported yet.')).toHaveLength(3);
   });
 });

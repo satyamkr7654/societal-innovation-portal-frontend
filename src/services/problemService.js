@@ -26,6 +26,12 @@ export async function createProblem({ photo, ...problem }) {
   return request('/problems', { method: 'POST', body: form });
 }
 
+/** Open problems of the same category within 500 m. */
+export function findSimilarProblems(category, { lat, lng }) {
+  const query = new URLSearchParams({ category, lat, lng });
+  return request(`/problems/similar?${query}`);
+}
+
 export function submitFeedback(problemId, feedback) {
   return request(`/problems/${encodeURIComponent(problemId)}/feedback`, {
     method: 'POST',

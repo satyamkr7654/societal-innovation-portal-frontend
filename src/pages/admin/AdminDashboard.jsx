@@ -1,46 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Card from '../../components/ui/Card';
+import BarList from '../../components/charts/BarList';
+import TrendChart from '../../components/charts/TrendChart';
 import Button from '../../components/ui/Button';
 import LoadState from '../../components/ui/LoadState';
 import { useAsync } from '../../hooks/useAsync';
 import { getStats } from '../../services/adminService';
 import { formatRupees } from '../../utils/money';
-
-function CountTable({ title, label, rows }) {
-  return (
-    <Card
-      header={<h3 className="font-heading font-bold text-sm text-slate-800">{title}</h3>}
-    >
-      {rows.length === 0 ? (
-        <p className="text-sm text-slate-500">No problems reported yet.</p>
-      ) : (
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="text-left text-xs text-slate-500">
-              <th scope="col" className="pb-2 font-semibold">
-                {label}
-              </th>
-              <th scope="col" className="pb-2 font-semibold text-right">
-                Problems
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100">
-            {rows.map((row) => (
-              <tr key={row.name}>
-                <td className="py-1.5 text-slate-700">{row.name}</td>
-                <td className="py-1.5 text-right font-semibold text-slate-900">
-                  {row.count}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </Card>
-  );
-}
 
 export default function AdminDashboard() {
   const { data: stats, error, isLoading, reload } = useAsync(getStats);
@@ -81,6 +48,12 @@ export default function AdminDashboard() {
       to: '/admin/review?status=DECISION',
     },
     {
+      label: 'Overdue',
+      value: stats.overdue,
+      note: 'Waiting too long in a stage',
+      to: '/admin/review?status=OVERDUE',
+    },
+    {
       label: 'Accounts to approve',
       value: stats.pendingAccounts,
       note: 'Universities and companies',
@@ -118,7 +91,7 @@ export default function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {tiles.map(({ label, value, note, to }) => {
           const tile = (
             <Card hover={Boolean(to)} padding="sm" className="h-full">
@@ -139,17 +112,11 @@ export default function AdminDashboard() {
         })}
       </div>
 
+      <TrendChart months={stats.monthly} />
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        <CountTable
-          title="Problems by district"
-          label="District"
-          rows={stats.byDistrict}
-        />
-        <CountTable
-          title="Problems by category"
-          label="Category"
-          rows={stats.byCategory}
-        />
+        <BarList title="Problems by district" label="District" rows={stats.byDistrict} />
+        <BarList title="Problems by category" label="Category" rows={stats.byCategory} />
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 import DesignSystemDemo from '../pages/DesignSystemDemo';
 import Notifications from '../pages/Notifications';
+import PublicProblems from '../pages/PublicProblems';
 import NotFound from '../pages/NotFound';
 
 // Citizen Pages
@@ -51,6 +52,10 @@ const routes = [
       {
         path: '/',
         element: <Home />,
+      },
+      {
+        path: '/problems',
+        element: <PublicProblems />,
       },
       {
         path: '/login',
