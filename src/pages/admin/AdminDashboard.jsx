@@ -1,10 +1,103 @@
 import React from 'react';
-import Card from '../../components/ui/Card';
-import Badge from '../../components/ui/Badge';
-import Button from '../../components/ui/Button';
 import { Link } from 'react-router-dom';
+import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
+import LoadState from '../../components/ui/LoadState';
+import { useAsync } from '../../hooks/useAsync';
+import { getStats } from '../../services/adminService';
+import { formatRupees } from '../../utils/money';
+
+function CountTable({ title, label, rows }) {
+  return (
+    <Card
+      header={<h3 className="font-heading font-bold text-sm text-slate-800">{title}</h3>}
+    >
+      {rows.length === 0 ? (
+        <p className="text-sm text-slate-500">No problems reported yet.</p>
+      ) : (
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="text-left text-xs text-slate-500">
+              <th scope="col" className="pb-2 font-semibold">
+                {label}
+              </th>
+              <th scope="col" className="pb-2 font-semibold text-right">
+                Problems
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {rows.map((row) => (
+              <tr key={row.name}>
+                <td className="py-1.5 text-slate-700">{row.name}</td>
+                <td className="py-1.5 text-right font-semibold text-slate-900">
+                  {row.count}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </Card>
+  );
+}
 
 export default function AdminDashboard() {
+  const { data: stats, error, isLoading, reload } = useAsync(getStats);
+  if (isLoading || error) return <LoadState error={error} onRetry={reload} />;
+
+  const { byStatus } = stats;
+  const tiles = [
+    {
+      label: 'Awaiting review',
+      value: byStatus.SUBMITTED,
+      note: `of ${stats.total} reported`,
+      to: '/admin/review?status=SUBMITTED',
+    },
+    {
+      label: 'Ready to assign',
+      value: byStatus.VALIDATED,
+      note: 'Validated problems',
+      to: '/admin/review?status=VALIDATED',
+    },
+    {
+      label: 'With universities',
+      value: byStatus.ASSIGNED + byStatus.IN_PROGRESS,
+      note: 'Assigned or in progress',
+    },
+    {
+      label: 'Solved',
+      value: byStatus.SOLVED,
+      note:
+        stats.averageDaysToSolve === null
+          ? 'None solved yet'
+          : `${stats.averageDaysToSolve.toFixed(1)} days on average`,
+      to: '/admin/review?status=SOLVED',
+    },
+    {
+      label: 'Accounts to approve',
+      value: stats.pendingAccounts,
+      note: 'Universities and companies',
+      to: '/admin/accounts',
+    },
+    {
+      label: 'Industry funding',
+      value: formatRupees(stats.fundingInr),
+      note: `${stats.fundedProblems} problems funded`,
+    },
+    {
+      label: 'Citizen rating',
+      value: stats.averageRating === null ? '–' : `${stats.averageRating.toFixed(1)} / 5`,
+      note: 'Average of all feedback',
+    },
+    {
+      label: 'Rejected',
+      value: byStatus.REJECTED,
+      note: 'With a recorded reason',
+      to: '/admin/review?status=REJECTED',
+    },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -12,74 +105,46 @@ export default function AdminDashboard() {
           <h2 className="text-2xl font-heading font-bold text-slate-900">
             Government Administration Console
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500">
-            State-level monitoring of societal problems across Jharkhand districts.
-          </p>
+          <p className="text-sm text-slate-500">Live figures from the portal database.</p>
         </div>
         <Link to="/admin/review">
-          <Button variant="primary" size="sm">
-            Review Pending Submissions &rarr;
-          </Button>
+          <Button size="sm">Review Pending Submissions &rarr;</Button>
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card hover={true}>
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
-              Pending Review
-            </span>
-            <div className="text-3xl font-heading font-bold text-amber-600">14</div>
-            <p className="text-xs text-slate-500">Awaiting Govt Validation</p>
-          </div>
-        </Card>
-        <Card hover={true}>
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
-              Assigned to Univ
-            </span>
-            <div className="text-3xl font-heading font-bold text-primary">38</div>
-            <p className="text-xs text-slate-500">Active engineering projects</p>
-          </div>
-        </Card>
-        <Card hover={true}>
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
-              Industry Funded
-            </span>
-            <div className="text-3xl font-heading font-bold text-purple-600">19</div>
-            <p className="text-xs text-slate-500">₹42.5L CSR funding committed</p>
-          </div>
-        </Card>
-        <Card hover={true}>
-          <div className="space-y-1.5">
-            <span className="text-[11px] font-mono font-bold text-slate-400 uppercase">
-              Successfully Solved
-            </span>
-            <div className="text-3xl font-heading font-bold text-emerald-600">27</div>
-            <p className="text-xs text-slate-500">Verified and closed</p>
-          </div>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {tiles.map(({ label, value, note, to }) => {
+          const tile = (
+            <Card hover={Boolean(to)} padding="sm" className="h-full">
+              <span className="text-xs font-semibold text-slate-500">{label}</span>
+              <div className="text-2xl font-heading font-bold text-primary mt-1 break-words">
+                {value}
+              </div>
+              <p className="text-xs text-slate-500 mt-1">{note}</p>
+            </Card>
+          );
+          return to ? (
+            <Link key={label} to={to}>
+              {tile}
+            </Link>
+          ) : (
+            <div key={label}>{tile}</div>
+          );
+        })}
       </div>
 
-      <Card
-        header={
-          <div className="flex items-center justify-between">
-            <h3 className="font-heading font-bold text-sm text-slate-800">
-              Analytics & Recharts Integration (Phase F4)
-            </h3>
-            <Badge status="validated" size="sm">
-              Phase F4 Target
-            </Badge>
-          </div>
-        }
-      >
-        <p className="text-xs text-slate-600 leading-relaxed font-sans py-2">
-          In <strong>Phase F4</strong>, this admin screen will feature interactive{' '}
-          <strong>Recharts</strong> data visualizations (problem breakdown by district,
-          resolution time trends, and university performance scorecards).
-        </p>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <CountTable
+          title="Problems by district"
+          label="District"
+          rows={stats.byDistrict}
+        />
+        <CountTable
+          title="Problems by category"
+          label="Category"
+          rows={stats.byCategory}
+        />
+      </div>
     </div>
   );
 }

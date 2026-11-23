@@ -50,7 +50,9 @@ export default function Register() {
         phone: data.phone,
         organizationName: data.institutionName || data.companyName,
       });
-      navigate('/login', { state: { registeredEmail: account.email } });
+      navigate('/login', {
+        state: { registeredEmail: account.email, needsApproval: !account.approved },
+      });
     } catch (error) {
       setFormError(error.message);
     }

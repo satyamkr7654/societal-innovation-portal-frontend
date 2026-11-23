@@ -28,7 +28,7 @@ export default function UniversityCard({ university }) {
             <div className="flex items-center justify-between text-slate-600">
               <span>Faculty Lead:</span>
               <strong className="text-slate-900">
-                {university.facultyLead || 'Assigned Faculty'}
+                {university.facultyLead || 'Not named yet'}
               </strong>
             </div>
 

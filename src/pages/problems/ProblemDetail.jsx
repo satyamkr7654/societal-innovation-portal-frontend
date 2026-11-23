@@ -17,13 +17,18 @@ import { useAuth } from '../../hooks/useAuth';
 import { getProblem } from '../../services/problemService';
 import { isProblemOwner } from '../../utils/problems';
 
-export default function ProblemDetail() {
+/** One problem. `Actions` adds role-specific controls above the details. */
+export default function ProblemDetail({
+  listPath = '/citizen/problems',
+  listLabel = 'My Problems',
+  Actions = null,
+}) {
   const { id } = useParams();
   // The key resets all state when the URL points to another problem
-  return <ProblemDossier key={id} id={id} />;
+  return <ProblemDossier key={id} {...{ id, listPath, listLabel, Actions }} />;
 }
 
-function ProblemDossier({ id }) {
+function ProblemDossier({ id, listPath, listLabel, Actions }) {
   const { user } = useAuth();
   const load = useCallback(() => getProblem(id), [id]);
   const { data: problem, error, isLoading, reload, setData } = useAsync(load);
@@ -55,9 +60,9 @@ function ProblemDossier({ id }) {
           <code className="font-mono font-bold text-slate-700">{id}</code>. It may have
           been archived or removed.
         </p>
-        <Link to="/citizen/problems">
+        <Link to={listPath}>
           <Button variant="primary" size="sm">
-            &larr; Back to My Problems
+            &larr; Back to {listLabel}
           </Button>
         </Link>
       </div>
@@ -72,10 +77,10 @@ function ProblemDossier({ id }) {
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       <div className="flex items-center justify-between">
         <Link
-          to="/citizen/problems"
+          to={listPath}
           className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-700 hover:text-primary-900 hover:underline transition"
         >
-          <span>&larr;</span> Back to My Reported Problems
+          <span>&larr;</span> Back to {listLabel}
         </Link>
 
         <div className="flex items-center gap-2">
@@ -149,6 +154,8 @@ function ProblemDossier({ id }) {
           rejectionReason={problem.rejectionReason}
         />
       </div>
+
+      {Actions && <Actions key={problem.status} problem={problem} onSaved={setData} />}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         <div className="lg:col-span-2 space-y-6">

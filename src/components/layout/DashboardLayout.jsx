@@ -18,6 +18,8 @@ export default function DashboardLayout() {
     if (pathname.includes('/citizen/submit')) return 'Report Problem';
     if (pathname.includes('/citizen/problems')) return 'My Problems';
     if (pathname.includes('/admin/dashboard')) return 'Admin Overview';
+    if (pathname.includes('/admin/problems')) return 'Review Problems';
+    if (pathname.includes('/admin/accounts')) return 'Account Approvals';
     if (pathname.includes('/admin/review')) return 'Review Problems';
     if (pathname.includes('/university/dashboard')) return 'University R&D';
     if (pathname.includes('/university/assignments')) return 'Assigned Problems';

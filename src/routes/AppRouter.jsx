@@ -20,11 +20,13 @@ import NotFound from '../pages/NotFound';
 import CitizenDashboard from '../pages/citizen/CitizenDashboard';
 import SubmitProblem from '../pages/citizen/SubmitProblem';
 import MyProblems from '../pages/citizen/MyProblems';
-import ProblemDetail from '../pages/citizen/ProblemDetail';
+import ProblemDetail from '../pages/problems/ProblemDetail';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/AdminDashboard';
 import ReviewProblems from '../pages/admin/ReviewProblems';
+import AdminProblemDetail from '../pages/admin/AdminProblemDetail';
+import Accounts from '../pages/admin/Accounts';
 
 // University Pages
 import UniversityDashboard from '../pages/university/UniversityDashboard';
@@ -110,6 +112,8 @@ const routes = [
                 path: '/admin/review',
                 element: <ReviewProblems />,
               },
+              { path: '/admin/problems/:id', element: <AdminProblemDetail /> },
+              { path: '/admin/accounts', element: <Accounts /> },
             ],
           },
 

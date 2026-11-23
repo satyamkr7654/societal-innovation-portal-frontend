@@ -14,7 +14,7 @@ export default function Login() {
   const [authError, setAuthError] = useState('');
   const location = useLocation();
   const { user, login } = useAuth();
-  const registeredEmail = location.state?.registeredEmail;
+  const { registeredEmail, needsApproval } = location.state || {};
 
   // If redirected by ProtectedRoute, capture the intended path
   const from = location.state?.from;
@@ -215,7 +215,11 @@ export default function Login() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>Account created. Please sign in.</span>
+                <span>
+                  {needsApproval
+                    ? 'Account created. You can sign in once an admin approves it.'
+                    : 'Account created. Please sign in.'}
+                </span>
               </div>
             )}
 
