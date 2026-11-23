@@ -82,13 +82,13 @@ export default function AdminDashboard() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-heading font-bold text-slate-900">
-            Government Administration Console
+            Administration Console
           </h2>
           <p className="text-sm text-slate-500">Live figures from the portal database.</p>
         </div>
-        <Link to="/admin/review">
-          <Button size="sm">Review Pending Submissions &rarr;</Button>
-        </Link>
+        <Button to="/admin/review" size="sm">
+          Review Pending Submissions &rarr;
+        </Button>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">

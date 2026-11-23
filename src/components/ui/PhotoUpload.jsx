@@ -94,6 +94,7 @@ export default function PhotoUpload({
         accept={PHOTO_TYPES.join(',')}
         onChange={handleInputChange}
         className="hidden"
+        aria-label="Photo of the problem"
         id="problem-photo-upload"
       />
 
@@ -169,7 +170,16 @@ export default function PhotoUpload({
           <div className="space-y-0.5">
             <span className="text-xs sm:text-sm font-bold text-slate-800">
               Drag & Drop photo evidence here, or{' '}
-              <span className="text-primary underline">Browse files</span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation(); // the whole area is clickable too
+                  fileInputRef.current?.click();
+                }}
+                className="text-primary underline font-bold"
+              >
+                Browse files
+              </button>
             </span>
             <p className="text-[11px] text-slate-500">
               Supports JPG, PNG, WebP up to 5MB (Clear photos accelerate verification)
@@ -180,7 +190,10 @@ export default function PhotoUpload({
 
       {/* Error message */}
       {errorMsg && (
-        <p className="flex items-center gap-1.5 text-xs text-red-600 font-medium animate-in fade-in duration-150">
+        <p
+          role="alert"
+          className="flex items-center gap-1.5 text-xs text-red-600 font-medium animate-in fade-in duration-150"
+        >
           <svg
             className="w-3.5 h-3.5 shrink-0 text-red-500"
             fill="currentColor"

@@ -20,13 +20,13 @@ export const SAMPLE_PROBLEMS = [
     },
     assignedUniversity: {
       id: 'univ_01',
-      name: 'BIT Mesra Innovation Lab',
+      name: 'Palash Institute Innovation Lab',
       department: 'Department of Civil & Environmental Engineering',
       facultyLead: 'Dr. Anandita Sen',
       studentsCount: 4,
     },
     industrySupport: {
-      sponsor: 'Tata Steel CSR Foundation',
+      sponsor: 'Shikhar Steel CSR',
       type: 'Funding & Flow Sensor Hardware',
       amount: '₹2,50,000',
     },
@@ -51,7 +51,8 @@ export const SAMPLE_PROBLEMS = [
         stage: 'ASSIGNED',
         changedAt: '2026-09-17T14:00:00Z',
         changedBy: 'Dept. of Higher Education, Govt. of Jharkhand',
-        remarks: 'Assigned to BIT Mesra for IoT pipeline leak detection prototype.',
+        remarks:
+          'Assigned to Palash Institute for IoT pipeline leak detection prototype.',
       },
     ],
     feedback: null,
@@ -76,13 +77,13 @@ export const SAMPLE_PROBLEMS = [
     },
     assignedUniversity: {
       id: 'univ_02',
-      name: 'IIT (ISM) Dhanbad Civic Innovation Cell',
+      name: 'Damodar Institute Civic Innovation Cell',
       department: 'Department of Mining & Environmental Engineering',
       facultyLead: 'Prof. R. N. Mukherjee',
       studentsCount: 5,
     },
     industrySupport: {
-      sponsor: 'Bharat Coking Coal Limited (BCCL) CSR',
+      sponsor: 'Kaushal Minerals CSR',
       type: 'Heavy Desilting Machinery & Polymer Covers',
       amount: '₹4,00,000',
     },
@@ -106,12 +107,12 @@ export const SAMPLE_PROBLEMS = [
         stage: 'ASSIGNED',
         changedAt: '2026-09-11T12:30:00Z',
         changedBy: 'State Innovation Council',
-        remarks: 'Allocated to IIT (ISM) Dhanbad for gravity-assisted silt trap design.',
+        remarks: 'Allocated to Damodar Institute for gravity-assisted silt trap design.',
       },
       {
         stage: 'IN_PROGRESS',
         changedAt: '2026-09-18T16:00:00Z',
-        changedBy: 'IIT (ISM) Dhanbad Team Lead',
+        changedBy: 'Damodar Institute Team Lead',
         remarks:
           'Milestone 2 reached: Modular silt filtration grates installed on trial stretch.',
       },
@@ -179,13 +180,13 @@ export const SAMPLE_PROBLEMS = [
     },
     assignedUniversity: {
       id: 'univ_03',
-      name: 'Birsa Agricultural University (BAU) Ranchi',
+      name: 'Sakhua Agricultural University',
       department: 'Department of Agricultural Engineering',
       facultyLead: 'Dr. Manoj Soren',
       studentsCount: 6,
     },
     industrySupport: {
-      sponsor: 'Jindal Steel & Power CSR',
+      sponsor: 'Girija Metals CSR',
       type: 'Solar Submersible Pumps & HDPE Pipelines',
       amount: '₹3,50,000',
     },
@@ -209,12 +210,12 @@ export const SAMPLE_PROBLEMS = [
         stage: 'ASSIGNED',
         changedAt: '2026-09-06T15:30:00Z',
         changedBy: 'Govt Nodal Desk',
-        remarks: 'Assigned to BAU Ranchi faculty.',
+        remarks: 'Assigned to Sakhua Agricultural University faculty.',
       },
       {
         stage: 'IN_PROGRESS',
         changedAt: '2026-09-16T11:00:00Z',
-        changedBy: 'BAU Project Team',
+        changedBy: 'Sakhua Project Team',
         remarks:
           'Milestone 2: Solar pump foundation constructed and test boring completed.',
       },
@@ -275,13 +276,13 @@ export const SAMPLE_PROBLEMS = [
     },
     assignedUniversity: {
       id: 'univ_04',
-      name: 'NIT Jamshedpur Civil Engineering Cell',
+      name: 'Subarna Institute Civil Engineering Cell',
       department: 'Structural Engineering Division',
       facultyLead: 'Dr. Pradeep Mishra',
       studentsCount: 4,
     },
     industrySupport: {
-      sponsor: 'Tata Motors CSR Program',
+      sponsor: 'Mahua Motors CSR',
       type: 'Structural Steel Beams & Concrete Mix',
       amount: '₹5,50,000',
     },
@@ -305,12 +306,12 @@ export const SAMPLE_PROBLEMS = [
         stage: 'ASSIGNED',
         changedAt: '2026-08-13T16:00:00Z',
         changedBy: 'Govt Innovation Portal',
-        remarks: 'Assigned to NIT Jamshedpur.',
+        remarks: 'Assigned to Subarna Institute.',
       },
       {
         stage: 'IN_PROGRESS',
         changedAt: '2026-08-25T11:00:00Z',
-        changedBy: 'NIT Project Team',
+        changedBy: 'Subarna Project Team',
         remarks: 'Modular precast arch successfully set in place.',
       },
       {
@@ -324,7 +325,7 @@ export const SAMPLE_PROBLEMS = [
     feedback: {
       rating: 5,
       comment:
-        'Superb rapid response by NIT students and Tata Motors. Traffic restored within weeks!',
+        'Superb rapid response by Subarna Institute students and Mahua Motors. Traffic restored within weeks!',
       submittedAt: '2026-09-14T08:00:00Z',
     },
   },
@@ -349,7 +350,7 @@ export const SAMPLE_PROBLEMS = [
     },
     assignedUniversity: {
       id: 'univ_05',
-      name: 'Vinoba Bhave University (VBU) Hazaribagh',
+      name: 'Koel Valley University',
       department: 'Department of Biotechnology & Environmental Sciences',
       facultyLead: 'Dr. Kalpana Kumari',
       studentsCount: 3,
@@ -375,7 +376,8 @@ export const SAMPLE_PROBLEMS = [
         stage: 'ASSIGNED',
         changedAt: '2026-09-22T14:45:00Z',
         changedBy: 'Govt Admin Portal',
-        remarks: 'Assigned to VBU for bio-retention wetland filtration solution.',
+        remarks:
+          'Assigned to Koel Valley University for bio-retention wetland filtration solution.',
       },
     ],
     feedback: null,
@@ -475,13 +477,13 @@ export const SAMPLE_PROBLEMS = [
     },
     assignedUniversity: {
       id: 'univ_01',
-      name: 'BIT Mesra Electrical & Electronics Cell',
+      name: 'Palash Institute Electrical & Electronics Cell',
       department: 'Department of Electrical Engineering',
       facultyLead: 'Prof. D. K. Tanti',
       studentsCount: 3,
     },
     industrySupport: {
-      sponsor: 'Adani Power CSR (Jharkhand)',
+      sponsor: 'Arunoday Power CSR',
       type: 'LiFePO4 Solar Batteries & Smart Luminaire Kits',
       amount: '₹1,80,000',
     },
@@ -505,12 +507,12 @@ export const SAMPLE_PROBLEMS = [
         stage: 'ASSIGNED',
         changedAt: '2026-08-18T14:00:00Z',
         changedBy: 'State Innovation Portal',
-        remarks: 'Assigned to BIT Mesra students for smart lighting retrofit.',
+        remarks: 'Assigned to Palash Institute students for smart lighting retrofit.',
       },
       {
         stage: 'IN_PROGRESS',
         changedAt: '2026-08-28T16:00:00Z',
-        changedBy: 'BIT Mesra Student Lead',
+        changedBy: 'Palash Institute Student Lead',
         remarks: 'IoT auto-dimming LED arrays assembled and lab-tested.',
       },
       {

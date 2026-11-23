@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import LoadState from '../../components/ui/LoadState';
@@ -40,9 +39,9 @@ export default function UniversityDashboard() {
           </h2>
           <p className="text-sm text-slate-500">Your university&apos;s projects.</p>
         </div>
-        <Link to="/university/assignments">
-          <Button size="sm">View Assigned Problems &rarr;</Button>
-        </Link>
+        <Button to="/university/assignments" size="sm">
+          View Assigned Problems &rarr;
+        </Button>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {tiles.map(([label, value, note]) => (

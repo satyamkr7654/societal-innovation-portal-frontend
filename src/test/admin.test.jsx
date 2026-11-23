@@ -54,12 +54,12 @@ describe('ReviewActions', () => {
   });
 
   it('assigns the chosen university', async () => {
-    admin.listUniversities.mockResolvedValue([{ id: 7, name: 'BIT Mesra' }]);
+    admin.listUniversities.mockResolvedValue([{ id: 7, name: 'Palash Institute' }]);
     admin.assignProblem.mockResolvedValue({});
     render(
       <ReviewActions problem={{ id: 'P1', status: 'VALIDATED' }} onSaved={() => {}} />
     );
-    await screen.findByText('BIT Mesra');
+    await screen.findByText('Palash Institute');
     await userEvent.click(button(/assign/i));
     expect(screen.getByRole('alert').textContent).toMatch(/choose a university/i);
     await userEvent.selectOptions(screen.getByLabelText('University'), '7');

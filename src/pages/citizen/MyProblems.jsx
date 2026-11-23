@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 import LoadState from '../../components/ui/LoadState';
 import ProblemCard from '../../components/problems/ProblemCard';
@@ -72,15 +72,14 @@ export default function MyProblems() {
         </div>
 
         <div className="flex items-center gap-3 shrink-0">
-          <Link to="/citizen/submit">
-            <Button
-              variant="primary"
-              size="md"
-              className="shadow-md shadow-primary-500/20"
-            >
-              <span className="mr-1.5 font-bold">+</span> Lodge New Problem
-            </Button>
-          </Link>
+          <Button
+            to="/citizen/submit"
+            variant="primary"
+            size="md"
+            className="shadow-md shadow-primary-500/20"
+          >
+            <span className="mr-1.5 font-bold">+</span> Lodge New Problem
+          </Button>
         </div>
       </div>
 
@@ -146,11 +145,9 @@ export default function MyProblems() {
                 Clear All Filters
               </Button>
             ) : null}
-            <Link to="/citizen/submit">
-              <Button variant="primary" size="sm">
-                + Lodge a New Problem
-              </Button>
-            </Link>
+            <Button to="/citizen/submit" variant="primary" size="sm">
+              + Lodge a New Problem
+            </Button>
           </div>
         </div>
       )}

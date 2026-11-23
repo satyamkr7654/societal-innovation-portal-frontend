@@ -3,3 +3,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Windows high contrast mode removes background colours, which would erase chart bars */
+@media (forced-colors: active) {
+  [style*='background-color'],
+  .bg-emerald-600 {
+    forced-color-adjust: none;
+  }
+}

@@ -74,8 +74,7 @@ export default function SubmitProblem() {
             Report a Local Problem
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Submit localized municipal, sanitation, or infrastructure issues directly to
-            the Government of Jharkhand.
+            Submit localized municipal, sanitation, or infrastructure issues for review.
           </p>
         </div>
         <Badge status="validated" size="sm">

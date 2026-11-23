@@ -67,11 +67,9 @@ function ProblemDossier({ id, listPath, listLabel, Actions }) {
           <code className="font-mono font-bold text-slate-700">{id}</code>. It may have
           been archived or removed.
         </p>
-        <Link to={listPath}>
-          <Button variant="primary" size="sm">
-            &larr; Back to {listLabel}
-          </Button>
-        </Link>
+        <Button to={listPath} variant="primary" size="sm">
+          &larr; Back to {listLabel}
+        </Button>
       </div>
     );
   }

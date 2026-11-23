@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import { z } from './zod';
 import { CIVIC_CATEGORIES } from '../constants/categories';
 import {
   findDistrict,

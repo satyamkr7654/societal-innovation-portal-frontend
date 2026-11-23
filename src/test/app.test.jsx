@@ -80,7 +80,7 @@ describe('Login page', () => {
       .mockRejectedValueOnce(new Error('Incorrect email or password.'))
       .mockResolvedValueOnce(userWithRole('citizen'));
     renderAt('/login');
-    await user.type(screen.getByLabelText(/email/i), 'citizen.ramesh@gmail.com');
+    await user.type(screen.getByLabelText(/email/i), 'citizen@demo.example');
     await user.type(screen.getByLabelText(/password/i), 'wrong');
     await user.click(screen.getByRole('button', { name: /sign in to dashboard/i }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/incorrect/i);

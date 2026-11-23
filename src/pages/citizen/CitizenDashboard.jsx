@@ -33,11 +33,9 @@ export default function CitizenDashboard() {
             Jharkhand.
           </p>
         </div>
-        <Link to="/citizen/submit">
-          <Button variant="primary" size="md">
-            + Report New Problem
-          </Button>
-        </Link>
+        <Button to="/citizen/submit" variant="primary" size="md">
+          + Report New Problem
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

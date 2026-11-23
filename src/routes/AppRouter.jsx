@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 // Layout Wrappers & Guards
@@ -10,36 +10,33 @@ import RouteError from '../pages/RouteError';
 
 // Public & Shared Pages
 import Home from '../pages/Home';
-import Login from '../pages/auth/Login';
-import Register from '../pages/auth/Register';
-import DesignSystemDemo from '../pages/DesignSystemDemo';
-import Notifications from '../pages/Notifications';
-import PublicProblems from '../pages/PublicProblems';
 import NotFound from '../pages/NotFound';
 
-// Citizen Pages
-import CitizenDashboard from '../pages/citizen/CitizenDashboard';
-import SubmitProblem from '../pages/citizen/SubmitProblem';
-import MyProblems from '../pages/citizen/MyProblems';
-import ProblemDetail from '../pages/problems/ProblemDetail';
-
-// Admin Pages
-import AdminDashboard from '../pages/admin/AdminDashboard';
-import ReviewProblems from '../pages/admin/ReviewProblems';
-import AdminProblemDetail from '../pages/admin/AdminProblemDetail';
-import Accounts from '../pages/admin/Accounts';
-
-// University Pages
-import UniversityDashboard from '../pages/university/UniversityDashboard';
-import UniversityProblemDetail from '../pages/university/UniversityProblemDetail';
-import Assignments from '../pages/university/Assignments';
-import Proposals from '../pages/university/Proposals';
-
-// Industry Pages
-import IndustryDashboard from '../pages/industry/IndustryDashboard';
-import BrowseProposals from '../pages/industry/BrowseProposals';
-import IndustryProblemDetail from '../pages/industry/IndustryProblemDetail';
-import MyPledges from '../pages/industry/MyPledges';
+// Loaded when first opened, so visitors do not download every dashboard
+const Login = lazy(() => import('../pages/auth/Login'));
+const Register = lazy(() => import('../pages/auth/Register'));
+const Notifications = lazy(() => import('../pages/Notifications'));
+const PublicProblems = lazy(() => import('../pages/PublicProblems'));
+const CitizenDashboard = lazy(() => import('../pages/citizen/CitizenDashboard'));
+const SubmitProblem = lazy(() => import('../pages/citizen/SubmitProblem'));
+const MyProblems = lazy(() => import('../pages/citizen/MyProblems'));
+const ProblemDetail = lazy(() => import('../pages/problems/ProblemDetail'));
+const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
+const ReviewProblems = lazy(() => import('../pages/admin/ReviewProblems'));
+const AdminProblemDetail = lazy(() => import('../pages/admin/AdminProblemDetail'));
+const Accounts = lazy(() => import('../pages/admin/Accounts'));
+const UniversityDashboard = lazy(() => import('../pages/university/UniversityDashboard'));
+const UniversityProblemDetail = lazy(
+  () => import('../pages/university/UniversityProblemDetail')
+);
+const Assignments = lazy(() => import('../pages/university/Assignments'));
+const Proposals = lazy(() => import('../pages/university/Proposals'));
+const IndustryDashboard = lazy(() => import('../pages/industry/IndustryDashboard'));
+const BrowseProposals = lazy(() => import('../pages/industry/BrowseProposals'));
+const IndustryProblemDetail = lazy(
+  () => import('../pages/industry/IndustryProblemDetail')
+);
+const MyPledges = lazy(() => import('../pages/industry/MyPledges'));
 
 /**
  * Master Route Configuration with Role-Based Route Guards
@@ -64,10 +61,6 @@ const routes = [
       {
         path: '/register',
         element: <Register />,
-      },
-      {
-        path: '/design-system',
-        element: <DesignSystemDemo />,
       },
       // 404 Catch-All Route
       {

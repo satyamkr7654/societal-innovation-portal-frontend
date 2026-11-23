@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
@@ -23,7 +22,7 @@ export default function Home() {
     {
       role: '2. GOVT ADMIN',
       title: 'Validate & Assign',
-      desc: 'Government officials verify authenticity and assign verified problems to accredited university R&D cells.',
+      desc: 'Government officials verify authenticity and assign verified problems to approved universities.',
       badge: 'assigned',
     },
     {
@@ -53,7 +52,7 @@ export default function Home() {
               SIH 2026 • SIH26043
             </span>
             <span className="text-xs font-medium text-slate-300">
-              Department of Higher & Technical Education, Govt. of Jharkhand
+              Academic prototype, not an official website
             </span>
           </div>
 
@@ -68,21 +67,18 @@ export default function Home() {
           </p>
 
           <div className="flex flex-wrap gap-3 pt-2">
-            <Link to={primaryAction.to}>
-              <Button variant="accent" size="lg">
-                {primaryAction.label}
-              </Button>
-            </Link>
+            <Button to={primaryAction.to} variant="accent" size="lg">
+              {primaryAction.label}
+            </Button>
             {!role && (
-              <Link to="/login">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-slate-400 text-white hover:bg-white/10 hover:text-white"
-                >
-                  Stakeholder Login
-                </Button>
-              </Link>
+              <Button
+                to="/login"
+                variant="outline"
+                size="lg"
+                className="border-slate-400 text-white hover:bg-white/10 hover:text-white"
+              >
+                Stakeholder Login
+              </Button>
             )}
           </div>
         </div>
@@ -98,8 +94,7 @@ export default function Home() {
             How Societal Problems Get Solved
           </h2>
           <p className="text-slate-600 text-xs sm:text-sm">
-            End-to-end lifecycle tracked in real-time from citizen submission to
-            university implementation.
+            Every step is recorded, from the citizen's report to the finished solution.
           </p>
         </div>
 

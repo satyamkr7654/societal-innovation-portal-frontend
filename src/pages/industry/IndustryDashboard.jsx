@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import LoadState from '../../components/ui/LoadState';
@@ -36,9 +35,9 @@ export default function IndustryDashboard() {
           </h2>
           <p className="text-sm text-slate-500">Your organisation&apos;s support.</p>
         </div>
-        <Link to="/industry/proposals">
-          <Button size="sm">Browse Proposals &rarr;</Button>
-        </Link>
+        <Button to="/industry/proposals" size="sm">
+          Browse Proposals &rarr;
+        </Button>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {tiles.map(([label, value, note]) => (

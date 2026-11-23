@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Card from '../ui/Card';
+import Modal from '../ui/Modal';
 
 /** Description and photo, with a full-size photo view. */
 export default function EvidenceCard({ problem }) {
@@ -61,20 +62,19 @@ export default function EvidenceCard({ problem }) {
         </div>
       </Card>
       {showImageModal && problem.photoUrl && (
-        <div
-          onClick={() => setShowImageModal(false)}
-          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4"
+        <Modal
+          label="Photo of the problem"
+          onClose={() => setShowImageModal(false)}
+          className="m-auto max-w-3xl w-[calc(100%-2rem)]"
         >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white rounded-xl overflow-hidden max-w-3xl w-full shadow-2xl relative"
-          >
+          <div className="bg-white rounded-xl overflow-hidden shadow-2xl">
             <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
               <h4 className="font-heading font-bold text-sm text-slate-800">
                 Case #{problem.id} — Photographic Evidence
               </h4>
               <button
                 type="button"
+                aria-label="Close photo"
                 onClick={() => setShowImageModal(false)}
                 className="w-7 h-7 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs flex items-center justify-center transition"
               >
@@ -89,7 +89,7 @@ export default function EvidenceCard({ problem }) {
               />
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </>
   );

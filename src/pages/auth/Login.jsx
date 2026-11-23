@@ -8,7 +8,6 @@ import { DEMO_ACCOUNTS, DEMO_PASSWORD } from '../../constants/demoAccounts';
 import { loginSchema } from '../../schemas/authSchemas';
 import Button from '../../components/ui/Button';
 import FormInput from '../../components/ui/FormInput';
-import Badge from '../../components/ui/Badge';
 
 export default function Login() {
   const [authError, setAuthError] = useState('');
@@ -57,7 +56,7 @@ export default function Login() {
     <div className="py-4 sm:py-8 max-w-5xl mx-auto">
       {/* Split-Screen Civic Container */}
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
-        {/* Left Panel: Official Government Branding & Stakeholder Information */}
+        {/* Left Panel: about the portal */}
         <div className="lg:col-span-5 bg-primary text-white p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-primary-light">
           {/* Subtle Ambient Background Highlight */}
           <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-primary-light/40 rounded-full blur-3xl pointer-events-none" />
@@ -70,17 +69,17 @@ export default function Login() {
               </div>
               <div>
                 <div className="font-heading font-bold text-sm tracking-tight text-white">
-                  Government of Jharkhand
+                  Societal Innovation Portal
                 </div>
                 <div className="text-[10px] text-slate-300 uppercase tracking-wider font-sans">
-                  Higher & Technical Education Dept.
+                  Academic prototype
                 </div>
               </div>
             </div>
 
             <div className="space-y-2 pt-2">
               <span className="inline-block px-2.5 py-0.5 bg-accent/20 text-accent-light text-[11px] font-bold rounded uppercase tracking-wider border border-accent/30">
-                Single Sign-On
+                One Portal
               </span>
               <h1 className="text-2xl font-heading font-bold tracking-tight text-white leading-snug">
                 Societal Innovation Collaboration Portal
@@ -117,7 +116,7 @@ export default function Login() {
           {/* Bottom Security / Accreditation Tag */}
           <div className="pt-6 border-t border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400 relative z-10">
             <span>SIH 2026 • SIH26043</span>
-            <span>Helpline: 1800-JH-CIVIC</span>
+            <span>Not an official website</span>
           </div>
         </div>
 
@@ -129,9 +128,6 @@ export default function Login() {
                 <h2 className="text-2xl font-heading font-bold text-slate-900 tracking-tight">
                   Sign In to Portal
                 </h2>
-                <Badge status="validated" size="sm">
-                  Official Access
-                </Badge>
               </div>
               <p className="text-xs text-slate-500">Enter your email and password.</p>
             </div>

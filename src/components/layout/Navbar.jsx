@@ -41,7 +41,7 @@ export default function Navbar() {
                 Societal Innovation Portal
               </div>
               <div className="text-[10px] sm:text-[11px] font-sans font-medium text-slate-500 uppercase tracking-wider truncate">
-                Govt. of Jharkhand • SIH26043
+                Academic prototype • SIH26043
               </div>
             </div>
           </Link>
@@ -71,11 +71,13 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-2.5 shrink-0">
             {isAuthenticated ? (
               <div className="flex items-center gap-3">
-                <Link to={`/${user?.role || 'citizen'}/dashboard`}>
-                  <Button variant="primary" size="sm">
-                    Dashboard &rarr;
-                  </Button>
-                </Link>
+                <Button
+                  to={`/${user?.role || 'citizen'}/dashboard`}
+                  variant="primary"
+                  size="sm"
+                >
+                  Dashboard &rarr;
+                </Button>
 
                 <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
                   <div className="w-8 h-8 rounded-full bg-primary text-white font-bold text-xs flex items-center justify-center shadow-xs">
@@ -96,6 +98,7 @@ export default function Navbar() {
                   onClick={handleLogout}
                   className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
                   title="Sign Out"
+                  aria-label="Sign out"
                 >
                   <svg
                     className="w-4 h-4"
@@ -114,16 +117,12 @@ export default function Navbar() {
               </div>
             ) : (
               <>
-                <Link to="/login">
-                  <Button variant="outline" size="sm">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link to="/register">
-                  <Button variant="primary" size="sm">
-                    Citizen Register
-                  </Button>
-                </Link>
+                <Button to="/login" variant="outline" size="sm">
+                  Sign In
+                </Button>
+                <Button to="/register" variant="primary" size="sm">
+                  Citizen Register
+                </Button>
               </>
             )}
           </div>
@@ -202,15 +201,15 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                <Link
+                <Button
                   to={`/${user?.role || 'citizen'}/dashboard`}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full"
+                  variant="primary"
+                  size="md"
+                  className="w-full justify-center"
                 >
-                  <Button variant="primary" size="md" className="w-full justify-center">
-                    Go to Dashboard &rarr;
-                  </Button>
-                </Link>
+                  Go to Dashboard &rarr;
+                </Button>
 
                 <Button
                   variant="outline"
@@ -223,24 +222,24 @@ export default function Navbar() {
               </>
             ) : (
               <>
-                <Link
+                <Button
                   to="/login"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full"
+                  variant="outline"
+                  size="md"
+                  className="w-full justify-center"
                 >
-                  <Button variant="outline" size="md" className="w-full justify-center">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link
+                  Sign In
+                </Button>
+                <Button
                   to="/register"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="w-full"
+                  variant="primary"
+                  size="md"
+                  className="w-full justify-center"
                 >
-                  <Button variant="primary" size="md" className="w-full justify-center">
-                    Citizen Register
-                  </Button>
-                </Link>
+                  Citizen Register
+                </Button>
               </>
             )}
           </div>

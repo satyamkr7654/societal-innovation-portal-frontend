@@ -127,11 +127,14 @@ export default function ProblemCard({ problem, isOwner }) {
           )}
 
           <div className="text-right space-y-1.5 w-full">
-            <Link to={`/citizen/problems/${problem.id}`} className="block w-full">
-              <Button variant="outline" size="sm" className="w-full text-xs font-bold">
-                Track Status &rarr;
-              </Button>
-            </Link>
+            <Button
+              to={`/citizen/problems/${problem.id}`}
+              variant="outline"
+              size="sm"
+              className="w-full text-xs font-bold"
+            >
+              Track Status &rarr;
+            </Button>
             <span className="text-[11px] text-slate-400 block text-center md:text-right">
               Lodged{' '}
               {new Date(problem.submittedAt).toLocaleDateString('en-IN', {

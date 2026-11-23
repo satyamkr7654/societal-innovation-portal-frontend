@@ -1,10 +1,10 @@
 /** Accounts the backend creates when DEMO_DATA=true. Shown only in development. */
 export const DEMO_ACCOUNTS = import.meta.env.DEV
   ? [
-      { role: 'citizen', label: 'Citizen', email: 'citizen.ramesh@gmail.com' },
-      { role: 'admin', label: 'Govt Admin', email: 'admin.dept@jharkhand.gov.in' },
-      { role: 'university', label: 'University', email: 'faculty@bitmesra.ac.in' },
-      { role: 'industry', label: 'Industry CSR', email: 'csr@tatasteel.com' },
+      { role: 'citizen', label: 'Citizen', email: 'citizen@demo.example' },
+      { role: 'admin', label: 'Govt Admin', email: 'admin@demo.example' },
+      { role: 'university', label: 'University', email: 'university@demo.example' },
+      { role: 'industry', label: 'Industry CSR', email: 'industry@demo.example' },
     ]
   : [];
 

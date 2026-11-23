@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
+import Modal from '../ui/Modal';
 
 export default function Sidebar({
   role = 'citizen',
@@ -327,16 +328,12 @@ export default function Sidebar({
 
       {/* Mobile Slide-in Drawer with Backdrop */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop overlay */}
-          <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
-            onClick={onClose}
-            aria-hidden="true"
-          />
-
-          {/* Drawer container */}
-          <div className="fixed inset-y-0 left-0 w-72 max-w-full bg-slate-900 shadow-2xl flex flex-col z-50 animate-in slide-in-from-left duration-200">
+        <Modal
+          label="Menu"
+          onClose={onClose}
+          className="lg:hidden m-0 h-dvh max-h-none w-72 max-w-full"
+        >
+          <div className="relative h-full bg-slate-900 shadow-2xl flex flex-col">
             {/* Mobile close button */}
             <div className="absolute top-4 right-4 z-10">
               <button
@@ -363,7 +360,7 @@ export default function Sidebar({
 
             {sidebarContent}
           </div>
-        </div>
+        </Modal>
       )}
     </>
   );

@@ -47,8 +47,8 @@ export default function UniversityCard({ university }) {
           <p>This problem has not yet been assigned to a university innovation cell.</p>
           <div className="p-2.5 bg-slate-50 rounded border border-slate-200 text-[11px] text-slate-600">
             Government nodal officers review submitted grievances and match them with
-            Jharkhand university departments (BIT Mesra, IIT ISM Dhanbad, NIT Jamshedpur,
-            etc.).
+            Jharkhand university departments (Palash Institute, Damodar Institute, Subarna
+            Institute, etc.).
           </div>
         </div>
       )}

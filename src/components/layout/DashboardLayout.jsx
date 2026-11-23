@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useUnreadCount } from '../../hooks/useUnreadCount';
+import SkipLink from '../ui/SkipLink';
+import PageOutlet from './PageOutlet';
 import Sidebar from './Sidebar';
 
 /**
@@ -37,6 +39,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-slate-100 font-sans antialiased text-slate-800 flex overflow-x-hidden">
+      <SkipLink />
       {/* Role-Aware Sidebar */}
       <Sidebar
         role={role}
@@ -76,7 +79,7 @@ export default function DashboardLayout() {
                 {getPageTitle(location.pathname)}
               </h1>
               <div className="text-[10px] sm:text-[11px] text-slate-500 font-medium hidden sm:block truncate">
-                Govt. of Jharkhand • SIH26043
+                Academic prototype • SIH26043
               </div>
             </div>
           </div>
@@ -130,6 +133,7 @@ export default function DashboardLayout() {
               onClick={() => logout().catch((error) => window.alert(error.message))}
               className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition cursor-pointer"
               title="Sign Out"
+              aria-label="Sign out"
             >
               <svg
                 className="w-4 h-4"
@@ -149,8 +153,12 @@ export default function DashboardLayout() {
         </header>
 
         {/* Dynamic Nested Content Area */}
-        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          <Outlet />
+        <main
+          id="main"
+          tabIndex={-1}
+          className="focus:outline-none flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto"
+        >
+          <PageOutlet />
         </main>
       </div>
     </div>

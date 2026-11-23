@@ -19,12 +19,11 @@ export default function Footer() {
             </div>
             <p className="text-xs text-slate-600 leading-relaxed max-w-sm">
               Smart India Hackathon 2026 Problem Statement SIH26043. Connecting Citizens,
-              Universities, and Industry partners to resolve localized societal challenges
-              under the supervision of the Government of Jharkhand.
+              Universities, and Industry partners to resolve local societal challenges in
+              Jharkhand.
             </p>
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-slate-100 rounded text-[11px] font-semibold text-slate-700 border border-slate-200">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-              Department of Higher & Technical Education, Jharkhand
+              Academic prototype
             </div>
           </div>
 
@@ -51,7 +50,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/login" className="hover:text-primary transition">
-                  Govt. Administration Desk
+                  Administration Desk
                 </Link>
               </li>
             </ul>
@@ -69,7 +68,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <span className="text-slate-400">Toll Free: 1800-JH-CIVIC</span>
+                <Link to="/problems" className="hover:text-primary transition">
+                  Public Problems
+                </Link>
               </li>
             </ul>
           </div>
@@ -79,8 +80,11 @@ export default function Footer() {
       {/* Bottom Sub-footer Bar */}
       <div className="border-t border-slate-100 bg-slate-50 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
-          <p>© 2026 Government of Jharkhand. All rights reserved.</p>
-          <p className="flex items-center gap-2">
+          <p>
+            Student project for demonstration. Not an official government website and not
+            affiliated with the Government of Jharkhand.
+          </p>
+          <p className="flex items-center gap-2 shrink-0">
             <span>Built for SIH 2026</span>
             <span>•</span>
             <span className="font-mono text-[11px] text-slate-400">SIH26043</span>

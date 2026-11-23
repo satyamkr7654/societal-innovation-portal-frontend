@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import { z } from './zod';
 
 export const loginSchema = z.object({
   email: z
@@ -31,14 +31,14 @@ export const getRegisterSchema = (role) => {
     baseSchema.institutionName = z
       .string()
       .trim()
-      .min(3, 'Institution name must be at least 3 characters (e.g. BIT Mesra)');
+      .min(3, 'Institution name must be at least 3 characters (e.g. Palash Institute)');
   } else if (role === 'industry') {
     baseSchema.companyName = z
       .string()
       .trim()
       .min(
         2,
-        'Company/Organization name must be at least 2 characters (e.g. Tata Steel CSR)'
+        'Company/Organization name must be at least 2 characters (e.g. Shikhar Steel CSR)'
       );
   }
 

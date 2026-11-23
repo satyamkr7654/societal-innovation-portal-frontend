@@ -40,15 +40,19 @@ export default function SimilarProblems({ category, location }) {
         submitting.
       </p>
       <ul className="space-y-1.5">
-        {problems.map((p) => (
-          <li key={p.id} className="flex flex-wrap items-center gap-2">
-            <Link
-              to={`/citizen/problems/${p.id}`}
-              target="_blank"
-              className="text-primary-700 font-medium underline break-words"
-            >
-              {p.title}
-            </Link>
+        {problems.map((p, i) => (
+          <li key={p.id ?? i} className="flex flex-wrap items-center gap-2">
+            {p.id ? (
+              <Link
+                to={`/citizen/problems/${p.id}`}
+                target="_blank"
+                className="text-primary-700 font-medium underline break-words"
+              >
+                {p.title}
+              </Link>
+            ) : (
+              <span className="text-slate-700">{p.title}</span>
+            )}
             <span className="text-xs text-slate-600">{p.distanceMeters} m away</span>
             <Badge status={p.status} size="sm" />
           </li>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import Spinner from './Spinner';
 
 /**
@@ -7,6 +8,7 @@ import Spinner from './Spinner';
  * @param {'sm' | 'md' | 'lg'} size - Button scale
  * @param {boolean} isLoading - Loading state with spinner
  * @param {boolean} disabled - Inactive state
+ * @param {string} to - When set, renders a link that looks like a button
  */
 export default function Button({
   children,
@@ -18,6 +20,7 @@ export default function Button({
   className = '',
   type = 'button',
   onClick,
+  to,
   ...props
 }) {
   const baseStyles =
@@ -43,18 +46,29 @@ export default function Button({
 
   const isDisabled = disabled || isLoading;
 
-  return (
-    <button
-      type={type}
-      disabled={isDisabled}
-      onClick={onClick}
-      className={`
+  const classes = `
         ${baseStyles}
         ${variantMap[variant] || variantMap.primary}
         ${sizeMap[size] || sizeMap.md}
         ${isDisabled ? 'opacity-60 cursor-not-allowed pointer-events-none' : ''}
         ${className}
-      `}
+      `;
+
+  // A <button> inside a <Link> is invalid HTML and gives keyboard users two stops
+  if (to) {
+    return (
+      <Link to={to} onClick={onClick} className={classes} {...props}>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <button
+      type={type}
+      disabled={isDisabled}
+      onClick={onClick}
+      className={classes}
       {...props}
     >
       {isLoading ? (

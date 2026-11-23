@@ -64,7 +64,7 @@ export default function Register() {
     <div className="py-4 sm:py-8 max-w-5xl mx-auto">
       {/* Split-Screen Civic Container */}
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[620px]">
-        {/* Left Panel: Official Government Identity & Enrollment Benefits */}
+        {/* Left Panel: what each role gains */}
         <div className="lg:col-span-5 bg-primary text-white p-6 sm:p-10 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-primary-light">
           <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-primary-light/40 rounded-full blur-3xl pointer-events-none" />
 
@@ -76,10 +76,10 @@ export default function Register() {
               </div>
               <div>
                 <div className="font-heading font-bold text-sm tracking-tight text-white">
-                  Government of Jharkhand
+                  Societal Innovation Portal
                 </div>
                 <div className="text-[10px] text-slate-300 uppercase tracking-wider font-sans">
-                  Higher & Technical Education Dept.
+                  Academic prototype
                 </div>
               </div>
             </div>
@@ -92,8 +92,7 @@ export default function Register() {
                 Join the Civic Innovation Ecosystem
               </h1>
               <p className="text-xs text-slate-300 leading-relaxed font-sans">
-                Participate in localized community transformation under the supervision of
-                state nodal authorities.
+                Take part in solving local problems in Jharkhand.
               </p>
             </div>
 
@@ -102,24 +101,21 @@ export default function Register() {
               <div className="p-3 rounded-lg bg-primary-light/30 border border-primary-light/50 space-y-1">
                 <span className="font-bold text-accent-light">👤 For Citizens:</span>
                 <p className="text-[11px] text-slate-300">
-                  Track resolution progress with verified photos and geotagged GPS
-                  timestamps.
+                  Report a problem with a photo and location, and follow each step.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-primary-light/30 border border-primary-light/50 space-y-1">
                 <span className="font-bold text-accent-light">🎓 For Universities:</span>
                 <p className="text-[11px] text-slate-300">
-                  Receive state-accredited problem assignments and direct industry CSR
-                  grants.
+                  Receive verified problems, propose solutions and find industry support.
                 </p>
               </div>
 
               <div className="p-3 rounded-lg bg-primary-light/30 border border-primary-light/50 space-y-1">
                 <span className="font-bold text-accent-light">🏭 For Industries:</span>
                 <p className="text-[11px] text-slate-300">
-                  Direct Section 135 CSR compliance with verifiable societal impact
-                  metrics.
+                  Discover approved proposals and offer funds, equipment or mentorship.
                 </p>
               </div>
             </div>
@@ -127,7 +123,7 @@ export default function Register() {
 
           <div className="pt-6 border-t border-slate-700/60 flex items-center justify-between text-[11px] text-slate-400 relative z-10">
             <span>SIH 2026 • SIH26043</span>
-            <span>Ranchi, Jharkhand</span>
+            <span>Not an official website</span>
           </div>
         </div>
 
@@ -168,6 +164,7 @@ export default function Register() {
                     key={role.id}
                     type="button"
                     onClick={() => handleRoleChange(role.id)}
+                    aria-pressed={selectedRole === role.id}
                     className={`
                       flex flex-col items-center justify-center py-2 px-1 rounded-md text-xs font-semibold transition duration-150 cursor-pointer
                       ${
@@ -183,8 +180,7 @@ export default function Register() {
                 ))}
               </div>
               <p className="text-[10px] text-slate-400 mt-1.5 italic">
-                * Govt Admin accounts are provisioned directly by nodal authorities and
-                cannot be self-registered.
+                * Admin accounts cannot be self-registered.
               </p>
             </div>
 
@@ -224,7 +220,7 @@ export default function Register() {
               {selectedRole === 'university' && (
                 <FormInput
                   label="Institution / University"
-                  placeholder="e.g. BIT Mesra / NIT Jamshedpur"
+                  placeholder="e.g. Palash Institute of Technology"
                   required
                   helperText="Accredited institution name"
                   {...register('institutionName')}
@@ -235,7 +231,7 @@ export default function Register() {
               {selectedRole === 'industry' && (
                 <FormInput
                   label="Company / CSR Foundation"
-                  placeholder="e.g. Tata Steel Foundation"
+                  placeholder="e.g. Shikhar Steel CSR"
                   required
                   helperText="CSR donor or industrial mentor entity"
                   {...register('companyName')}

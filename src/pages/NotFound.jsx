@@ -1,7 +1,6 @@
 import React from 'react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import { Link } from 'react-router-dom';
 
 export default function NotFound() {
   return (
@@ -20,11 +19,9 @@ export default function NotFound() {
               </p>
             </div>
             <div className="pt-2">
-              <Link to="/">
-                <Button variant="primary" size="md">
-                  &larr; Return to Home Portal
-                </Button>
-              </Link>
+              <Button to="/" variant="primary" size="md">
+                &larr; Return to Home Portal
+              </Button>
             </div>
           </div>
         </Card>
